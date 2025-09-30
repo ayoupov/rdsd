@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/rdsd/static/css/main.c57e37db.css",
+    "main.js": "/rdsd/static/js/main.aa2c6121.js",
+    "index.html": "/rdsd/index.html",
+    "main.c57e37db.css.map": "/rdsd/static/css/main.c57e37db.css.map",
+    "main.aa2c6121.js.map": "/rdsd/static/js/main.aa2c6121.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.c57e37db.css",
+    "static/js/main.aa2c6121.js"
+  ]
+}
