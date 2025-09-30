@@ -2,7 +2,7 @@ export default function Screen2() {
     return (
         <div className="w-full h-full bg-black flex flex-col items-center justify-center p-4 text-white relative">
             <img
-                src="/img/unpp.gif"
+                src={process.env.PUBLIC_URL + "/img/unpp.gif"}
                 className="w-full max-w-xs md:max-w-md mt-2"
                 alt="UNPP animation"
             />

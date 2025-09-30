@@ -19,7 +19,7 @@ export default function LogoHeader({ scrollY, scrollToHome }) {
             onClick={scrollToHome}
         >
             <img
-                src="/img/logo-white.svg"
+                src={process.env.PUBLIC_URL + "/img/logo-white.svg"}
                 alt="Logo"
                 style={{ transform: `scale(${scale})` }}
             />

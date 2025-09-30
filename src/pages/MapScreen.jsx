@@ -11,7 +11,7 @@ const DEFAULT = {west: -180, east: 180, south: -65, north: 90, latScale: 0.918};
 
 // Leaflet icons
 const defaultIcon = new L.Icon({
-    iconUrl: "/img/default-pin-shadow.png",
+    iconUrl: process.env.PUBLIC_URL + "/img/default-pin-shadow.png",
     // shadowUrl: "/img/default-pin-shadow.png",
     iconAnchor: [0, 0],
     popupAnchor: [1, -34],
@@ -19,7 +19,7 @@ const defaultIcon = new L.Icon({
 });
 
 const selectedIcon = new L.Icon({
-    iconUrl: "/img/active-pin-shadow.png",
+    iconUrl: process.env.PUBLIC_URL + "/img/active-pin-shadow.png",
     // shadowUrl: "/img/active-pin-shadow.png",
     iconAnchor: [0, 0],
     popupAnchor: [1, -34],
@@ -123,9 +123,9 @@ export default function MapScreen() {
                 maxBoundsViscosity={1.0}
                 className="bg-black"
             >
-                <ImageOverlay url="/img/world.png" bounds={mainBounds}/>
-                <ImageOverlay url="/img/world.png" bounds={leftBounds}/>
-                <ImageOverlay url="/img/world.png" bounds={rightBounds}/>
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds}/>
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={leftBounds}/>
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={rightBounds}/>
 
                 {scaledPlaces.map((place) => (
                     <Marker
