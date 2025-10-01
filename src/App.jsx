@@ -28,7 +28,7 @@ export default function App() {
     const lastMapPathRef = useRef("/map");
     const isFirstLoadRef = useRef(true);
 
-    // Fixed image style state
+    // Fixed image style
     const [imgStyle, setImgStyle] = useState({top: "0px", opacity: 1});
 
     // Track last Map subroute
@@ -86,7 +86,7 @@ export default function App() {
         }, 500);
     }, [location.pathname, screens]);
 
-    // Scroll listener for route sync and img animation
+    // Scroll listener for route sync and image animation
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
@@ -94,10 +94,11 @@ export default function App() {
         let rafId = null;
 
         const onScroll = () => {
-            if (programmaticScrollRef.current) return;
+            if (programmaticScrollRef.current || isFirstLoadRef.current) return;
 
             setScrollY(el.scrollTop);
 
+            // Route sync debounce
             if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
             scrollDebounceRef.current = setTimeout(() => {
                 const scrollPos = el.scrollTop;
@@ -125,41 +126,37 @@ export default function App() {
                 }
             }, 120);
 
-            // RequestAnimationFrame for smooth image updates
+            // Image animation
             if (rafId) cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(() => {
                 const scrollTop = el.scrollTop;
                 const screenHeight = el.clientHeight;
-
-                // Determine which "screen" we're on
                 const screenIndex = Math.floor((scrollTop + screenHeight / 2) / screenHeight);
 
                 let top;
-                if (screenIndex === 0) { // home
-                    // top = `${window.innerHeight * 0.5}px`;
-                    // top = `${window.innerHeight * 0.9 - containerRef.current.children[0].offsetTop}px`;
+                if (screenIndex === 0) {
+                    // Home: fixed at bottom with 10% margin
                     const imgEl = document.getElementById("fixed-unpp");
                     const imgHeight = imgEl ? imgEl.offsetHeight : 100;
-                    top = window.innerHeight * 0.9 - imgHeight;
+                    top = `${window.innerHeight * 0.9 - imgHeight}px`;
                 } else if (screenIndex === 1 || screenIndex === 2) {
-                    top = `${window.innerHeight * 0.1}px`;
+                    // Screens 2 & 3: fixed at 10% from top
+                    top = `${window.innerHeight * 0.15}px`;
                 } else {
-                    // MapScreen: keep top at 20px (or irrelevant, fades out)
+                    // MapScreen: irrelevant (fading out)
                     top = "20px";
                 }
 
-                // Faster opacity fade-out into MapScreen
+                // Opacity fade into MapScreen
                 let opacity = 1;
-                const fadeStart = screenHeight * 2;  // start fading as soon as Screen3 starts
-                const fadeEnd = screenHeight * 2.2;  // fully disappear shortly after
+                const fadeStart = screenHeight * 2; // start fading after Screen3
+                const fadeEnd = screenHeight * 2.2;
                 if (scrollTop > fadeStart) {
-                    if (scrollTop >= fadeEnd) opacity = 0;
-                    else opacity = 1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart);
+                    opacity = scrollTop >= fadeEnd ? 0 : 1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart);
                 }
 
                 setImgStyle({top, opacity});
             });
-
         };
 
         el.addEventListener("scroll", onScroll, {passive: true});
@@ -169,6 +166,17 @@ export default function App() {
             if (rafId) cancelAnimationFrame(rafId);
         };
     }, [navigate, location.pathname, screens]);
+
+    // Flip first load flag on first user scroll
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+        const onFirstScroll = () => {
+            if (isFirstLoadRef.current) isFirstLoadRef.current = false;
+        };
+        el.addEventListener("scroll", onFirstScroll, {once: true});
+        return () => el.removeEventListener("scroll", onFirstScroll);
+    }, []);
 
     return (
         <div className="relative h-screen w-screen">
@@ -180,7 +188,7 @@ export default function App() {
                     id="fixed-unpp"
                     src={process.env.PUBLIC_URL + "/img/unpp.gif"}
                     alt="UNPP animation"
-                    className="fixed h-auto left-1/2 -translate-x-1/2 w-screen z-40 pointer-events-none transition-all duration-100"
+                    className="fixed h-auto left-1/2 -translate-x-1/2 z-40 pointer-events-none transition-all duration-100"
                     style={{
                         ...imgStyle,
                         width: "80%", // 10% margin on each side
@@ -189,31 +197,22 @@ export default function App() {
                         const imgHeight = e.target.offsetHeight;
                         setImgStyle((prev) => ({
                             ...prev,
-                            top: window.innerHeight * 0.9 - imgHeight,
+                            top: `${window.innerHeight * 0.9 - imgHeight}px`,
                         }));
                     }}
                 />
             )}
 
             {/* Burger menu */}
-            <button
-                className="fixed top-4 right-4 z-50 p-2 bg-gray-900 text-white rounded-md focus:outline-none"
-                onClick={() => setMenuOpen(true)}
-            >
-                <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+            {(containerRef.current ? Math.floor((containerRef.current.scrollTop + containerRef.current.clientHeight / 2) / containerRef.current.clientHeight) !== 0 : false)
+                && (<button
+                    className="fixed top-4 right-4 z-50 p-2 bg-gray-900 text-white rounded-md focus:outline-none"
+                    onClick={() => setMenuOpen(true)}
                 >
-                    <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 6h16M4 12h16M4 18h16"
-                    />
-                </svg>
-            </button>
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>)}
 
             {/* Overlay menu */}
             {menuOpen && (
@@ -238,15 +237,11 @@ export default function App() {
             )}
 
             {/* Scroll container */}
-            <div
-                ref={containerRef}
-                className="scroll-container h-screen w-screen overflow-y-scroll scroll-snap-y snap-mandatory"
-            >
+            <div ref={containerRef}
+                 className="scroll-container h-screen w-screen overflow-y-scroll scroll-snap-y snap-mandatory">
                 {screens.map((screen, idx) => (
-                    <div
-                        key={idx}
-                        className="scroll-screen h-screen w-screen snap-start flex justify-center items-center"
-                    >
+                    <div key={idx}
+                         className="scroll-screen h-screen w-screen snap-start flex justify-center items-center">
                         {screen.component}
                     </div>
                 ))}
