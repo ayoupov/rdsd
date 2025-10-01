@@ -16,8 +16,8 @@ export default function App() {
     const screens = useMemo(
         () => [
             {name: "Home", path: "/", component: <Home/>},
-            {name: "Screen2", path: "/screen2", component: <Screen2/>},
-            {name: "Screen3", path: "/screen3", component: <Screen3/>},
+            {name: "Screen2", path: "/landing2", component: <Screen2/>},
+            {name: "Screen3", path: "/landing3", component: <Screen3/>},
             {name: "MapScreen", path: "/map", component: <MapScreen/>},
         ],
         []

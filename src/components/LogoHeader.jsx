@@ -1,28 +1,35 @@
 export default function LogoHeader({ scrollY, scrollToHome }) {
-    // Compute shrink factor based on scroll position
-    // 0 = big logo, 1 = fully small
-    const maxShrink = 120; // pixels after which logo is fully small
+    const maxShrink = 120;
     const factor = Math.min(scrollY / maxShrink, 1);
 
-    // interpolate size and top
-    const width = 100 - 40 * factor; // big = 100%, small = 60%
-    const top = 24 - 22 * factor;    // big = top-24, small = top-2
-    const scale = 1 - 0.25 * factor; // optional scale effect
+    // Explicit pixel sizes
+    const initialWidth = 358;
+    const initialHeight = 173;
+    const finalWidth = 100;
+    const finalHeight = 49;
+
+    const width = initialWidth - (initialWidth - finalWidth) * factor;
+    const height = initialHeight - (initialHeight - finalHeight) * factor;
+    const top = 24 - 22 * factor;
 
     return (
         <div
-            className="fixed left-1/2 transform -translate-x-1/2 z-50 flex justify-center cursor-pointer transition-all duration-100"
-            style={{
-                top: `${top}px`,
-                width: `${width}%`,
-            }}
             onClick={scrollToHome}
+            className="fixed left-0 right-0 z-50 flex justify-center"
+            style={{ top: `${top}px` }}
         >
             <img
                 src={process.env.PUBLIC_URL + "/img/logo-white.svg"}
                 alt="Logo"
-                style={{ transform: `scale(${scale})` }}
+                className="block"
+                style={{
+                    width: `${width}px`,
+                    height: `${height}px`,
+                    objectFit: "contain",
+                    maxWidth: "none",
+                }}
             />
         </div>
+
     );
 }
