@@ -8,11 +8,11 @@ export default function Home() {
                 and their settlements
             </div>
 
-            <img
-                src={process.env.PUBLIC_URL + "/img/unpp.gif"}
-                className="w-full max-w-xs md:max-w-md mt-2"
-                alt="UNPP animation"
-            />
+            {/*<img*/}
+            {/*    src={process.env.PUBLIC_URL + "/img/unpp.gif"}*/}
+            {/*    className="w-full max-w-xs md:max-w-md mt-2"*/}
+            {/*    alt="UNPP animation"*/}
+            {/*/>*/}
         </div>
     );
 }
