@@ -52,7 +52,6 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
     }
   };
 
-
   const handleScroll = () => {
     if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
     scrollTimeout.current = setTimeout(snapToTop, 150);
@@ -62,22 +61,30 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
       <div
           ref={containerRef}
           onScroll={handleScroll}
-          className="overflow-y-auto h-48 border-t border-b cursor-pointer bg-white/60 backdrop-blur-sm rounded-lg"
+          className="overflow-y-auto h-48 cursor-pointer rounded-lg px-[5%]"
       >
         {extendedItems.map((item, idx) => {
           const realIndex = idx % items.length;
-          const isSelected = realIndex === safeSelectedIndex;
 
           return (
               <button
                   key={`${item.id ?? idx}-${idx}`}
-                  className={`w-full my-1 px-4 py-3 text-center text-lg rounded-lg ${
-                      isSelected
-                          ? "bg-blue-500 text-white font-bold"
-                          : "bg-white/80 hover:bg-blue-100"
-                  }`}
+                  className="w-full my-1 px-4 py-3 text-left rounded-lg flex justify-between items-center"
+                  style={{
+                    backgroundColor: "transparent",
+                    color: "#FFFFFF",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
+                    textShadow: "0 1px 3px rgba(0,0,0,0.6)",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
               >
-                {item.name}
+            <span className="overflow-hidden text-ellipsis">
+              {item.name} / {item.set_name}
+            </span>
+                <span className="ml-2 font-bold">{">"}</span>
               </button>
           );
         })}

@@ -139,7 +139,7 @@ export default function MapScreen() {
                 <FlyToLocation flyTo={flyTo}/>
             </MapContainer>
 
-            <div className="absolute bottom-0 w-full bg-white bg-opacity-50">
+            <div className="absolute bottom-0 w-full">
                 <VerticalWheelPicker
                     items={scaledPlaces}
                     onSelect={handleSelect}
