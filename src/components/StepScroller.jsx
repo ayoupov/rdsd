@@ -12,7 +12,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
     const scrollStep = (delta) => {
         if (scrolling) return;
 
-        let newIndex = (topIndex + delta + items.length) % items.length;
+        const newIndex = (topIndex + delta + items.length) % items.length;
         setTopIndex(newIndex);
         setScrolling(true);
 
@@ -28,19 +28,20 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         setTimeout(() => setScrolling(false), 200);
     };
 
-    // Wheel handler (step scroll)
     const handleWheel = (e) => {
         e.preventDefault();
         scrollStep(e.deltaY > 0 ? 1 : -1);
     };
 
-    // Touch handlers
     const handleTouchStart = (e) => {
-        if (e.touches.length === 1) touchStartY.current = e.touches[0].clientY;
+        if (e.touches.length === 1) {
+            touchStartY.current = e.touches[0].clientY;
+        }
     };
 
     const handleTouchEnd = (e) => {
         if (scrolling) return;
+
         const deltaY = e.changedTouches[0].clientY - touchStartY.current;
         if (Math.abs(deltaY) > 10) {
             scrollStep(deltaY < 0 ? 1 : -1); // swipe up = scroll down
@@ -51,10 +52,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         const el = containerRef.current;
         if (!el) return;
 
-        // Add wheel listener with passive: false
         el.addEventListener("wheel", handleWheel, { passive: false });
-
-        // Add touch listeners (passive default is fine)
         el.addEventListener("touchstart", handleTouchStart, { passive: true });
         el.addEventListener("touchend", handleTouchEnd, { passive: true });
 
@@ -65,18 +63,19 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         };
     }, [topIndex, scrolling]);
 
-    const getOpacity = (position) => {
-        if (position === 0) return 1;
-        if (position === 1) return 0.4;
-        return Math.max(0.4 - (position - 1) * 0.1, 0.1);
-    };
-
+    // Sync from outside selectedIndex
     useEffect(() => {
         if (selectedIndex !== topIndex) {
             scrollStep(selectedIndex - topIndex);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedIndex]);
+
+    const getOpacity = (position) => {
+        if (position === 0) return 1;
+        if (position === 1) return 0.4;
+        return Math.max(0.4 - (position - 1) * 0.1, 0.1);
+    };
 
     return (
         <div
@@ -85,8 +84,8 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
             style={{ scrollBehavior: "smooth" }}
         >
             {items.map((item, idx) => {
-                let position = (idx - topIndex + items.length) % items.length;
-                let opacity = getOpacity(position);
+                const position = (idx - topIndex + items.length) % items.length;
+                const opacity = getOpacity(position);
 
                 return (
                     <button
@@ -101,7 +100,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",
-                            opacity: opacity,
+                            opacity,
                             height: ITEM_HEIGHT - 2,
                         }}
                         onClick={() => onItemClick(item)}
