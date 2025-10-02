@@ -115,13 +115,17 @@ export default function MapScreen() {
         <div className="w-full h-full relative">
             <MapContainer
                 center={[initialPlace.scaledLat, initialPlace.lon]}
+                minZoom={4}
                 zoom={4}
+                maxZoom={5}
                 scrollWheelZoom={false}
                 style={{height: "100%", width: "100%", zIndex: 0, position: "absolute"}}
                 worldCopyJump={true}
                 maxBounds={mainBounds}
                 maxBoundsViscosity={1.0}
                 className="bg-black"
+                zoomControl={false}
+                attributionControl={false}
             >
                 <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds}/>
                 <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={leftBounds}/>

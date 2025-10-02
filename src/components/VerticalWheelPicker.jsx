@@ -55,9 +55,30 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
     if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
     scrollTimeout.current = setTimeout(() => {
       snapToTop();
-      if (containerRef.current) setScrollPos(containerRef.current.scrollTop);
     }, 50);
+
+    if (containerRef.current) {
+      setScrollPos(containerRef.current.scrollTop);
+    }
   };
+
+  // Compute first visible index on every render
+  const computeOpacities = () => {
+    if (!containerRef.current) return [];
+
+    const children = Array.from(containerRef.current.children);
+    const scrollTop = scrollPos;
+    const firstVisibleIdx = children.findIndex(c => c.offsetTop + c.offsetHeight > scrollTop);
+
+    return extendedItems.map((_, idx) => {
+      const positionFromFirst = idx - firstVisibleIdx;
+      if (positionFromFirst === 0) return 1;
+      if (positionFromFirst === 1) return 0.4;
+      return Math.max(0.4 - (positionFromFirst - 1) * 0.1, 0.1);
+    });
+  };
+
+  const opacities = computeOpacities();
 
   return (
       <div
@@ -66,26 +87,12 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
           className="overflow-y-auto h-48 cursor-pointer rounded-lg px-[5%]"
       >
         {extendedItems.map((item, idx) => {
-          const realIndex = idx % items.length;
-
-          // Compute button opacity based on its relative position in viewport
-          let opacity = 1;
-          if (containerRef.current) {
-            const child = containerRef.current.children[idx];
-            const containerHeight = containerRef.current.clientHeight;
-
-            const childTopRelative = child.offsetTop - containerRef.current.scrollTop;
-            const childBottomRelative = childTopRelative + child.offsetHeight;
-
-            // Calculate fade factor: 0 = top, 1 = bottom
-            const relative = Math.min(Math.max(childBottomRelative / containerHeight, 0), 1);
-            opacity = 1 - relative * 0.75; // fade 50% at bottom
-          }
+          const opacity = opacities[idx] ?? 1;
 
           return (
               <button
                   key={`${item.id ?? idx}-${idx}`}
-                  className="w-full my-1 px-4 py-3 text-left rounded-lg flex justify-between items-center"
+                  className="w-full my-1 px-4 py-3 text-left rounded-lg flex justify-between items-center transition-opacity duration-200"
                   style={{
                     backgroundColor: "transparent",
                     color: "#FFFFFF",
@@ -101,7 +108,7 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
             <span className="overflow-hidden text-ellipsis">
               {item.name} / {item.set_name}
             </span>
-                <span className="ml-2 font-bold">{">"}</span>
+                <span className="ml-2 font-bold" style={{ opacity }}>{">"}</span>
               </button>
           );
         })}
