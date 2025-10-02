@@ -82,11 +82,17 @@ export default function MapScreen() {
         navigate(`/map/${place.id}`, {replace: true});
     };
 
-    const handleMarkerClick = (place) => {
+    const handlePickerClick = (place) => {
         setSelectedPlace(place);
         setActiveTab("info");
         setIsClosing(false);
     };
+
+    // const handleMarkerClick = (place) => {
+    //     setSelectedPlace(place);
+    //     setActiveTab("info");
+    //     setIsClosing(false);
+    // };
 
     const closeModal = () => {
         setIsClosing(true);
@@ -115,8 +121,8 @@ export default function MapScreen() {
         <div className="w-full h-full relative">
             <MapContainer
                 center={[initialPlace.scaledLat, initialPlace.lon]}
-                minZoom={4}
-                zoom={4}
+                minZoom={5}
+                zoom={5}
                 maxZoom={5}
                 scrollWheelZoom={false}
                 style={{height: "100%", width: "100%", zIndex: 0, position: "absolute"}}
@@ -136,7 +142,7 @@ export default function MapScreen() {
                         key={place.id}
                         position={[place.scaledLat, place.lon]}
                         icon={activePlace.id === place.id ? selectedIcon : defaultIcon}
-                        eventHandlers={{click: () => handleMarkerClick(place)}}
+                        eventHandlers={{click: () => setSelectedIndex(place.id)}}
                     />
                 ))}
 
@@ -147,6 +153,7 @@ export default function MapScreen() {
                 <VerticalWheelPicker
                     items={scaledPlaces}
                     onSelect={handleSelect}
+                    onClick={handlePickerClick}
                     selectedIndex={selectedIndex}
                 />
             </div>

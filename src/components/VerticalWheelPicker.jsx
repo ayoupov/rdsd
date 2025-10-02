@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 
-export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0 }) {
+export default function VerticalWheelPicker({ items, onSelect, onClick, selectedIndex = 0 }) {
   const containerRef = useRef(null);
   const [topIndex, setTopIndex] = useState(selectedIndex);
   const [scrolling, setScrolling] = useState(false);
@@ -39,8 +39,9 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
   return (
       <div
           ref={containerRef}
-          onWheel={handleWheel}
-          className="overflow-hidden h-48 cursor-pointer rounded-lg px-[5%]"
+          // onWheel={handleWheel}
+          onTouchEnd={handleWheel}
+          className="overflow-hidden h-60 cursor-pointer rounded-lg px-[5%]"
           style={{ scrollBehavior: "smooth" }}
       >
         {items.map((item, idx) => {
@@ -64,6 +65,7 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
                     opacity: opacity,
                     height: ITEM_HEIGHT - 2, // leave margin for my-1
                   }}
+                  onClick={onClick}
               >
             <span className="overflow-hidden text-ellipsis">
               {item.name} / {item.set_name}
