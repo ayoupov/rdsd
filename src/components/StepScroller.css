@@ -1,0 +1,44 @@
+.step-scroller {
+    position: relative;
+    height: 300px; /* adjust visible area */
+    overflow: hidden;
+}
+
+.scroller-track {
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease;
+}
+
+.animating {
+    transform: translateY(-50px); /* shift by item height */
+}
+
+.scroller-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+    margin: 8px 8%;
+    padding: 12px;
+    font-size: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.scroller-item.active {
+    opacity: 1;
+}
+
+.scroller-item:not(.active) {
+    opacity: 0.4;
+}
+
+.arrow {
+    margin-left: 12px;
+}

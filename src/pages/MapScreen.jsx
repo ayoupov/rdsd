@@ -1,18 +1,17 @@
-import React, {useEffect, useState} from "react";
-import {ImageOverlay, MapContainer, Marker, useMap} from "react-leaflet";
+import React, { useEffect, useState } from "react";
+import { ImageOverlay, MapContainer, Marker, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import VerticalWheelPicker from "../components/VerticalWheelPicker";
-import {useNavigate, useParams} from "react-router-dom";
-import {places} from "../places";
+import StepScroller from "../components/StepScroller";
+import { useNavigate, useParams } from "react-router-dom";
+import { places } from "../places";
 
 // Default bounds and latScale
-const DEFAULT = {west: -180, east: 180, south: -65, north: 90, latScale: 0.918};
+const DEFAULT = { west: -180, east: 180, south: -65, north: 90, latScale: 0.918 };
 
 // Leaflet icons
 const defaultIcon = new L.Icon({
     iconUrl: process.env.PUBLIC_URL + "/img/default-pin-shadow.png",
-    // shadowUrl: "/img/default-pin-shadow.png",
     iconAnchor: [0, 0],
     popupAnchor: [1, -34],
     iconSize: [42, 42],
@@ -20,7 +19,6 @@ const defaultIcon = new L.Icon({
 
 const selectedIcon = new L.Icon({
     iconUrl: process.env.PUBLIC_URL + "/img/active-pin-shadow.png",
-    // shadowUrl: "/img/active-pin-shadow.png",
     iconAnchor: [0, 0],
     popupAnchor: [1, -34],
     iconSize: [42, 42],
@@ -33,7 +31,7 @@ const applyLatScale = (lat) => {
 };
 
 // FlyTo component
-function FlyToLocation({flyTo}) {
+function FlyToLocation({ flyTo }) {
     const map = useMap();
     useEffect(() => {
         if (flyTo?.length === 2) map.flyTo(flyTo, 4);
@@ -60,7 +58,6 @@ export default function MapScreen() {
         scaledPlaces.findIndex((p) => p.id === id)
     );
 
-    // React modal popup state
     const [selectedPlace, setSelectedPlace] = useState(null);
     const [activeTab, setActiveTab] = useState("info");
     const [isClosing, setIsClosing] = useState(false);
@@ -75,31 +72,33 @@ export default function MapScreen() {
         }
     }, [id]);
 
-    const handleSelect = (place) => {
+    // Handle selecting an item from scroller (highlight marker)
+    const handleItemSelect = (place) => {
         setActivePlace(place);
         setFlyTo([place.scaledLat, place.lon]);
         setSelectedIndex(scaledPlaces.findIndex((p) => p.id === place.id));
-        navigate(`/map/${place.id}`, {replace: true});
     };
 
-    const handlePickerClick = (place) => {
+    // Handle clicking a scroller item (open popup)
+    const handleItemClick = (place) => {
         setSelectedPlace(place);
         setActiveTab("info");
         setIsClosing(false);
     };
 
-    // const handleMarkerClick = (place) => {
-    //     setSelectedPlace(place);
-    //     setActiveTab("info");
-    //     setIsClosing(false);
-    // };
+    // Handle marker click (scroll scroller)
+    const handleMarkerClick = (place) => {
+        const index = scaledPlaces.findIndex((p) => p.id === place.id);
+        setSelectedIndex(index); // StepScroller will scroll to top
+        setActivePlace(place);
+    };
 
     const closeModal = () => {
         setIsClosing(true);
         setTimeout(() => {
             setSelectedPlace(null);
             setIsClosing(false);
-        }, 400); // match transition duration
+        }, 400);
     };
 
     const mainBounds = [
@@ -125,7 +124,7 @@ export default function MapScreen() {
                 zoom={5}
                 maxZoom={5}
                 scrollWheelZoom={false}
-                style={{height: "100%", width: "100%", zIndex: 0, position: "absolute"}}
+                style={{ height: "100%", width: "100%", zIndex: 0, position: "absolute" }}
                 worldCopyJump={true}
                 maxBounds={mainBounds}
                 maxBoundsViscosity={1.0}
@@ -133,32 +132,31 @@ export default function MapScreen() {
                 zoomControl={false}
                 attributionControl={false}
             >
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds}/>
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={leftBounds}/>
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={rightBounds}/>
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds} />
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={leftBounds} />
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={rightBounds} />
 
                 {scaledPlaces.map((place) => (
                     <Marker
                         key={place.id}
                         position={[place.scaledLat, place.lon]}
                         icon={activePlace.id === place.id ? selectedIcon : defaultIcon}
-                        eventHandlers={{click: () => setSelectedIndex(place.id)}}
+                        eventHandlers={{ click: () => handleMarkerClick(place) }}
                     />
                 ))}
 
-                <FlyToLocation flyTo={flyTo}/>
+                <FlyToLocation flyTo={flyTo} />
             </MapContainer>
 
             <div className="absolute bottom-0 w-full">
-                <VerticalWheelPicker
+                <StepScroller
                     items={scaledPlaces}
-                    onSelect={handleSelect}
-                    onClick={handlePickerClick}
                     selectedIndex={selectedIndex}
+                    onItemSelect={handleItemSelect}
+                    onItemClick={handleItemClick}
                 />
             </div>
 
-            {/* Mobile full-screen modal with slide-in/out and fade tabs */}
             {selectedPlace && (
                 <div
                     className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center z-50"
@@ -172,38 +170,35 @@ export default function MapScreen() {
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Tabs header */}
                         <div className="flex mb-2">
                             <button
-                                className={`flex-1 p-2 border ${activeTab === "info" ? "bg-gray-300" : "bg-white"} cursor-pointer`}
+                                className={`flex-1 p-2 border ${
+                                    activeTab === "info" ? "bg-gray-300" : "bg-white"
+                                } cursor-pointer`}
                                 onClick={() => setActiveTab("info")}
                             >
                                 Info
                             </button>
                             <button
-                                className={`flex-1 p-2 border ${activeTab === "details" ? "bg-gray-300" : "bg-white"} cursor-pointer`}
+                                className={`flex-1 p-2 border ${
+                                    activeTab === "details" ? "bg-gray-300" : "bg-white"
+                                } cursor-pointer`}
                                 onClick={() => setActiveTab("details")}
                             >
                                 Details
                             </button>
                         </div>
 
-                        {/* Tab content with fade */}
-                        <div
-                            className={`transition-opacity duration-300 ${activeTab === "info" ? "opacity-100" : "opacity-0"}`}>
+                        <div className={`transition-opacity duration-300 ${activeTab === "info" ? "opacity-100" : "opacity-0"}`}>
                             <p><strong>Name:</strong> {selectedPlace.name}</p>
                             <p><strong>City:</strong> {selectedPlace.city}</p>
                         </div>
-                        <div
-                            className={`transition-opacity duration-300 ${activeTab === "details" ? "opacity-100" : "opacity-0"}`}>
+                        <div className={`transition-opacity duration-300 ${activeTab === "details" ? "opacity-100" : "opacity-0"}`}>
                             <p><strong>Population:</strong> {selectedPlace.population || "N/A"}</p>
                             <p><strong>Notes:</strong> {selectedPlace.notes || "-"}</p>
                         </div>
 
-                        <button
-                            className="mt-4 p-2 border bg-gray-200 rounded"
-                            onClick={closeModal}
-                        >
+                        <button className="mt-4 p-2 border bg-gray-200 rounded" onClick={closeModal}>
                             Close
                         </button>
                     </div>
