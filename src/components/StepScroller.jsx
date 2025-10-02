@@ -5,29 +5,10 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
     const [topIndex, setTopIndex] = useState(selectedIndex);
     const [scrolling, setScrolling] = useState(false);
 
-    const ITEM_HEIGHT = 50; // must match button height + margin
+    const ITEM_HEIGHT = 50;
 
-    // Wheel or mouse scroll
-    const handleWheel = (e) => {
-        e.preventDefault();
-        scrollStep(e.deltaY > 0 ? 1 : -1);
-    };
-
-    // Touch gestures
     const touchStartY = useRef(0);
-    const handleTouchStart = (e) => {
-        if (e.touches.length === 1) touchStartY.current = e.touches[0].clientY;
-    };
 
-    const handleTouchEnd = (e) => {
-        if (scrolling) return;
-        const deltaY = e.changedTouches[0].clientY - touchStartY.current;
-        if (Math.abs(deltaY) > 10) {
-            scrollStep(deltaY < 0 ? 1 : -1); // swipe up = scroll down
-        }
-    };
-
-    // Step scroll logic
     const scrollStep = (delta) => {
         if (scrolling) return;
 
@@ -47,14 +28,49 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         setTimeout(() => setScrolling(false), 200);
     };
 
-    // Opacity helper
+    // Wheel handler (step scroll)
+    const handleWheel = (e) => {
+        e.preventDefault();
+        scrollStep(e.deltaY > 0 ? 1 : -1);
+    };
+
+    // Touch handlers
+    const handleTouchStart = (e) => {
+        if (e.touches.length === 1) touchStartY.current = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+        if (scrolling) return;
+        const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+        if (Math.abs(deltaY) > 10) {
+            scrollStep(deltaY < 0 ? 1 : -1); // swipe up = scroll down
+        }
+    };
+
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        // Add wheel listener with passive: false
+        el.addEventListener("wheel", handleWheel, { passive: false });
+
+        // Add touch listeners (passive default is fine)
+        el.addEventListener("touchstart", handleTouchStart, { passive: true });
+        el.addEventListener("touchend", handleTouchEnd, { passive: true });
+
+        return () => {
+            el.removeEventListener("wheel", handleWheel);
+            el.removeEventListener("touchstart", handleTouchStart);
+            el.removeEventListener("touchend", handleTouchEnd);
+        };
+    }, [topIndex, scrolling]);
+
     const getOpacity = (position) => {
         if (position === 0) return 1;
         if (position === 1) return 0.4;
         return Math.max(0.4 - (position - 1) * 0.1, 0.1);
     };
 
-    // Sync topIndex if selectedIndex prop changes (e.g., marker click)
     useEffect(() => {
         if (selectedIndex !== topIndex) {
             scrollStep(selectedIndex - topIndex);
@@ -65,9 +81,6 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
     return (
         <div
             ref={containerRef}
-            onWheel={handleWheel}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={handleTouchEnd}
             className="overflow-hidden h-60 cursor-pointer rounded-lg px-[5%]"
             style={{ scrollBehavior: "smooth" }}
         >
