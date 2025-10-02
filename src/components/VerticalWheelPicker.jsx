@@ -4,21 +4,25 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
   const containerRef = useRef(null);
   const scrollTimeout = useRef(null);
   const [scrollPos, setScrollPos] = useState(0);
+  const hasMounted = useRef(false);
 
   const extendedItems = [...items, ...items, ...items];
   const middleStart = items.length;
   const safeSelectedIndex = selectedIndex % items.length;
 
+  // Scroll to middle only on initial mount
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || hasMounted.current) return;
     const target = containerRef.current.children[middleStart + safeSelectedIndex];
     if (target) {
-      containerRef.current.scrollTo({ top: target.offsetTop, behavior: "smooth" });
+      containerRef.current.scrollTo({ top: target.offsetTop });
     }
-  }, [safeSelectedIndex, middleStart]);
+    hasMounted.current = true;
+  }, [middleStart, safeSelectedIndex]);
 
   const isSnappingRef = useRef(false);
 
+  // Snap to topmost button after scroll
   const snapToTop = () => {
     if (!containerRef.current) return;
 
@@ -62,13 +66,15 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
     }
   };
 
-  // Compute first visible index on every render
+  // Compute opacity for visible buttons
   const computeOpacities = () => {
     if (!containerRef.current) return [];
 
     const children = Array.from(containerRef.current.children);
     const scrollTop = scrollPos;
-    const firstVisibleIdx = children.findIndex(c => c.offsetTop + c.offsetHeight > scrollTop);
+    const firstVisibleIdx = children.findIndex(
+        (c) => c.offsetTop + c.offsetHeight > scrollTop
+    );
 
     return extendedItems.map((_, idx) => {
       const positionFromFirst = idx - firstVisibleIdx;
@@ -108,7 +114,9 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
             <span className="overflow-hidden text-ellipsis">
               {item.name} / {item.set_name}
             </span>
-                <span className="ml-2 font-bold" style={{ opacity }}>{">"}</span>
+                <span className="ml-2 font-bold" style={{ opacity }}>
+              {">"}
+            </span>
               </button>
           );
         })}
