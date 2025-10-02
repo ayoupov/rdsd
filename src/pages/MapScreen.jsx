@@ -59,7 +59,7 @@ export default function MapScreen() {
     );
 
     const [selectedPlace, setSelectedPlace] = useState(null);
-    const [activeTab, setActiveTab] = useState("info");
+    const [activeTab, setActiveTab] = useState("unpp");
     const [isClosing, setIsClosing] = useState(false);
 
     // Sync active place when route param changes
@@ -82,7 +82,7 @@ export default function MapScreen() {
     // Handle clicking a scroller item (open popup)
     const handleItemClick = (place) => {
         setSelectedPlace(place);
-        setActiveTab("info");
+        setActiveTab("unpp");
         setIsClosing(false);
     };
 
@@ -159,51 +159,111 @@ export default function MapScreen() {
 
             {selectedPlace && (
                 <div
-                    className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center z-50"
+                    className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50 overflow-y-auto"
                     onClick={closeModal}
                 >
                     <div
-                        className="bg-white w-[90vw] max-w-md h-[90vh] rounded-lg p-4 transition-transform transition-opacity duration-400 ease-out"
+                        className="bg-white w-full max-w-md min-h-screen rounded-none p-4 shadow-xl relative transition-transform transition-opacity duration-400 ease-out"
                         style={{
                             transform: isClosing ? "translateX(-100%)" : "translateX(0)",
                             opacity: isClosing ? 0 : 1,
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className="flex mb-2">
-                            <button
-                                className={`flex-1 p-2 border ${
-                                    activeTab === "info" ? "bg-gray-300" : "bg-white"
-                                } cursor-pointer`}
-                                onClick={() => setActiveTab("info")}
-                            >
-                                Info
-                            </button>
-                            <button
-                                className={`flex-1 p-2 border ${
-                                    activeTab === "details" ? "bg-gray-300" : "bg-white"
-                                } cursor-pointer`}
-                                onClick={() => setActiveTab("details")}
-                            >
-                                Details
-                            </button>
-                        </div>
-
-                        <div className={`transition-opacity duration-300 ${activeTab === "info" ? "opacity-100" : "opacity-0"}`}>
-                            <p><strong>Name:</strong> {selectedPlace.name}</p>
-                            <p><strong>City:</strong> {selectedPlace.city}</p>
-                        </div>
-                        <div className={`transition-opacity duration-300 ${activeTab === "details" ? "opacity-100" : "opacity-0"}`}>
-                            <p><strong>Population:</strong> {selectedPlace.population || "N/A"}</p>
-                            <p><strong>Notes:</strong> {selectedPlace.notes || "-"}</p>
-                        </div>
-
-                        <button className="mt-4 p-2 border bg-gray-200 rounded" onClick={closeModal}>
-                            Close
+                        {/* Close button top-left */}
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-4 left-4 p-2 text-gray-700 hover:text-black"
+                            aria-label="Close"
+                        >
+                            ←
                         </button>
+
+                        {/* Tabs Header */}
+                        <div className="flex mb-4 border-b border-gray-300">
+                            <button
+                                className={`flex-1 py-2 text-center font-semibold transition-colors ${
+                                    activeTab === "unpp" ? "bg-gray-100 text-black" : "text-gray-500 hover:bg-gray-50"
+                                }`}
+                                onClick={() => setActiveTab("unpp")}
+                            >
+                                {selectedPlace.name}
+                            </button>
+                            <button
+                                className={`flex-1 py-2 text-center font-semibold transition-colors ${
+                                    activeTab === "set" ? "bg-gray-100 text-black" : "text-gray-500 hover:bg-gray-50"
+                                }`}
+                                onClick={() => setActiveTab("set")}
+                            >
+                                {selectedPlace.set_name}
+                            </button>
+                        </div>
+
+                        {/* Tab Content */}
+                        <div className="space-y-6">
+                            {/* UNPP Tab */}
+                            {activeTab === "unpp" && (
+                                <div className="transition-opacity duration-300 opacity-100">
+                                    {selectedPlace.img_name && (
+                                        <img
+                                            src={process.env.PUBLIC_URL + "/img/IMG_UNPP/" + selectedPlace.img_name + ".png"}
+                                            alt={selectedPlace.name}
+                                            className="w-full h-auto object-contain rounded-lg mb-4"
+                                        />
+                                    )}
+
+                                    <table className="w-full text-left mb-4">
+                                        <tbody>
+                                        <tr>
+                                            <td className="font-semibold pr-2">Construction: {selectedPlace.construction_years || "N/A"}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="font-semibold pr-2">Planned: {selectedPlace.planned || "N/A"}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="font-semibold pr-2">Status: {selectedPlace.status || "N/A"}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <p className="text-gray-700">{selectedPlace.description}</p>
+                                </div>
+                            )}
+
+                            {/* Set Tab */}
+                            {activeTab === "set" && (
+                                <div className="transition-opacity duration-300 opacity-100">
+                                    {selectedPlace.set_id && (
+                                        <img
+                                            src={process.env.PUBLIC_URL + "/img/IMG_SETTLEMENT/" + selectedPlace.set_id + "_MAP.png"}
+                                            alt={selectedPlace.name + " settlement"}
+                                            className="w-full h-auto object-contain rounded-lg mb-4"
+                                        />
+                                    )}
+
+                                    <table className="w-full text-left mb-4">
+                                        <tbody>
+                                        <tr>
+                                            <td className="font-semibold pr-2">Est.: {selectedPlace.set_est || "N/A"}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="font-semibold pr-2">Planned population: {selectedPlace.set_planned_pop || "N/A"}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="font-semibold pr-2">Current population: {selectedPlace.set_cur_pop || "N/A"}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+
+                                    <p className="text-gray-700">{selectedPlace.set_description}</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             )}
+
+
         </div>
     );
 }
