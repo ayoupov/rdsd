@@ -76,7 +76,7 @@ export const places = [
     "name": "TATAR UNPP",
     "construction_years": "1981 – 1990\t",
     "planned": "4 REACTORS VVER-1000 ",
-    "status": "2 BLOCKS CEASED & 2 CANNCELED",
+    "status": "2 BLOCKS CEASED & 2 CANCELED",
     "description": "Construction of the Tatar NPP began in 1981, designed to host four VVER-1000/320 reactors of 1000MWe each. The project was intended to power the massive industrial complexes of the Tatar Autonomous Soviet Socialist Republic. Construction progressed significantly, making it one of the most advanced UNPP projects in the USSR. By 1990, Unit 1 was approximately 70% complete, with the reactor vessel already delivered to the site and major structural work finished. Unit 2 was around 30% complete, while Units 3 and 4 were in the earliest foundational stages.\\nThe project was terminated in April 1990 by a resolution of the Tatar Supreme Soviet. The decision was a major political act of defiance by the Tatar ASSR, which was seeking greater sovereignty from Moscow. While the anti-nuclear movement and geological concerns provided the official justification, the cancellation was also a strategic move by a republic with a powerful, pre-existing oil and gas industry. Halting a major nuclear project from Moscow both asserted political autonomy and protected the dominance of the local fossil fuel economy, leaving a technically advanced but politically doomed site to be cannibalized for other projects.",
     "img_name": "TATAR_AXO",
     "lat": 55.452078,
