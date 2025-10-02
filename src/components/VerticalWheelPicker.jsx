@@ -1,104 +1,57 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0 }) {
   const containerRef = useRef(null);
-  const scrollTimeout = useRef(null);
-  const [scrollPos, setScrollPos] = useState(0);
-  const hasMounted = useRef(false);
+  const [topIndex, setTopIndex] = useState(selectedIndex);
+  const [scrolling, setScrolling] = useState(false);
 
-  const extendedItems = [...items, ...items, ...items];
-  const middleStart = items.length;
-  const safeSelectedIndex = selectedIndex % items.length;
+  // Snap step height
+  const ITEM_HEIGHT = 50; // px, should match your button height + margin
 
-  // Scroll to middle only on initial mount
-  useEffect(() => {
-    if (!containerRef.current || hasMounted.current) return;
-    const target = containerRef.current.children[middleStart + safeSelectedIndex];
-    if (target) {
-      containerRef.current.scrollTo({ top: target.offsetTop });
-    }
-    hasMounted.current = true;
-  }, [middleStart, safeSelectedIndex]);
+  const handleWheel = (e) => {
+    e.preventDefault();
+    if (scrolling) return;
 
-  const isSnappingRef = useRef(false);
+    let delta = e.deltaY > 0 ? 1 : -1;
+    setScrolling(true);
 
-  // Snap to topmost button after scroll
-  const snapToTop = () => {
-    if (!containerRef.current) return;
+    let newIndex = (topIndex + delta + items.length) % items.length;
+    setTopIndex(newIndex);
+    if (onSelect) onSelect(items[newIndex]);
 
-    const container = containerRef.current;
-    const scrollTop = container.scrollTop;
-    const children = Array.from(container.children);
-
-    let topIndex = 0;
-    let minDiff = Infinity;
-
-    children.forEach((child, idx) => {
-      const diff = Math.abs(child.offsetTop - scrollTop);
-      if (diff < minDiff) {
-        minDiff = diff;
-        topIndex = idx;
-      }
-    });
-
-    const target = children[topIndex];
-    const realIndex = ((topIndex - middleStart + items.length) % items.length);
-
-    if (onSelect) onSelect(items[realIndex]);
-
-    if (target && !isSnappingRef.current) {
-      isSnappingRef.current = true;
-      container.scrollTo({ top: target.offsetTop, behavior: "smooth" });
-      setTimeout(() => {
-        isSnappingRef.current = false;
-      }, 200);
-    }
-  };
-
-  const handleScroll = () => {
-    if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-    scrollTimeout.current = setTimeout(() => {
-      snapToTop();
-    }, 50);
-
+    // Animate scroll
     if (containerRef.current) {
-      setScrollPos(containerRef.current.scrollTop);
+      containerRef.current.scrollTo({
+        top: newIndex * ITEM_HEIGHT,
+        behavior: "smooth",
+      });
     }
+
+    setTimeout(() => setScrolling(false), 200); // match animation duration
   };
 
-  // Compute opacity for visible buttons
-  const computeOpacities = () => {
-    if (!containerRef.current) return [];
-
-    const children = Array.from(containerRef.current.children);
-    const scrollTop = scrollPos;
-    const firstVisibleIdx = children.findIndex(
-        (c) => c.offsetTop + c.offsetHeight > scrollTop
-    );
-
-    return extendedItems.map((_, idx) => {
-      const positionFromFirst = idx - firstVisibleIdx;
-      if (positionFromFirst === 0) return 1;
-      if (positionFromFirst === 1) return 0.4;
-      return Math.max(0.4 - (positionFromFirst - 1) * 0.1, 0.1);
-    });
+  const getOpacity = (position) => {
+    if (position === 0) return 1;
+    if (position === 1) return 0.4;
+    return Math.max(0.4 - (position - 1) * 0.1, 0.1);
   };
-
-  const opacities = computeOpacities();
 
   return (
       <div
           ref={containerRef}
-          onScroll={handleScroll}
-          className="overflow-y-auto h-48 cursor-pointer rounded-lg px-[5%]"
+          onWheel={handleWheel}
+          className="overflow-hidden h-48 cursor-pointer rounded-lg px-[5%]"
+          style={{ scrollBehavior: "smooth" }}
       >
-        {extendedItems.map((item, idx) => {
-          const opacity = opacities[idx] ?? 1;
+        {items.map((item, idx) => {
+          // Compute virtual position relative to topIndex
+          let position = (idx - topIndex + items.length) % items.length;
+          let opacity = getOpacity(position);
 
           return (
               <button
-                  key={`${item.id ?? idx}-${idx}`}
-                  className="w-full my-1 px-4 py-3 text-left rounded-lg flex justify-between items-center transition-opacity duration-200"
+                  key={item.id}
+                  className="w-full my-1 px-4 py-3 text-left rounded-lg flex justify-between items-center"
                   style={{
                     backgroundColor: "transparent",
                     color: "#FFFFFF",
@@ -109,6 +62,7 @@ export default function VerticalWheelPicker({ items, onSelect, selectedIndex = 0
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                     opacity: opacity,
+                    height: ITEM_HEIGHT - 2, // leave margin for my-1
                   }}
               >
             <span className="overflow-hidden text-ellipsis">
