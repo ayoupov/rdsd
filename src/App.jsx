@@ -5,10 +5,15 @@ import Screen3 from "./pages/Screen3";
 import MapScreen from "./pages/MapScreen";
 import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
 import LogoHeader from "./components/LogoHeader.jsx";
+import OverlayMenu from "./components/OverlayMenu.jsx";
+import AboutModal from "./components/AboutModal.jsx";
+import SupportModal from "./components/SupportModal.jsx";
 
 export default function App() {
     const containerRef = useRef(null);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [aboutOpen, setAboutOpen] = useState(false);
+    const [supportOpen, setSupportOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
     const [scrollY, setScrollY] = useState(0);
@@ -178,6 +183,9 @@ export default function App() {
         return () => el.removeEventListener("scroll", onFirstScroll);
     }, []);
 
+    const currentScreen = Math.floor((scrollY + window.innerHeight / 2) / window.innerHeight);
+    const showBurger = currentScreen !== 0;
+
     return (
         <div className="relative h-screen w-screen">
             <LogoHeader scrollY={scrollY} scrollToHome={() => scrollToScreen(0)}/>
@@ -204,37 +212,32 @@ export default function App() {
             )}
 
             {/* Burger menu */}
-            {(containerRef.current ? Math.floor((containerRef.current.scrollTop + containerRef.current.clientHeight / 2) / containerRef.current.clientHeight) !== 0 : false)
-                && (<button
-                    className="fixed top-4 right-4 z-50 p-2 bg-gray-900 text-white rounded-md focus:outline-none"
+            {showBurger && (
+                <button
+                    className="fixed top-4 right-4 z-50 p-2 rounded-md focus:outline-none"
+                    style={{ backgroundColor: "rgba(0,0,0,0)" }} // transparent 50%
                     onClick={() => setMenuOpen(true)}
                 >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
-                </button>)}
+                </button>
+            )}
 
             {/* Overlay menu */}
-            {menuOpen && (
-                <div
-                    className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col items-center justify-center space-y-8 text-white">
-                    {screens.map((screen, idx) => (
-                        <button
-                            key={idx}
-                            className="text-3xl font-bold hover:text-gray-300"
-                            onClick={() => scrollToScreen(idx)}
-                        >
-                            {screen.name}
-                        </button>
-                    ))}
-                    <button
-                        className="absolute top-4 right-4 text-white text-3xl font-bold"
-                        onClick={() => setMenuOpen(false)}
-                    >
-                        ×
-                    </button>
-                </div>
-            )}
+            {menuOpen && <OverlayMenu
+                closeMenu={() => setMenuOpen(false)}
+                openAbout={() => {
+                    setMenuOpen(false);
+                    setAboutOpen(true);
+                }}
+                openSupport={() => {
+                    setMenuOpen(false);
+                    setSupportOpen(true);
+                }}
+            />}
+            {aboutOpen && <AboutModal closeModal={() => setAboutOpen(false)} />}
+            {supportOpen && <SupportModal closeModal={() => setAboutOpen(false)} />}
 
             {/* Scroll container */}
             <div ref={containerRef}
