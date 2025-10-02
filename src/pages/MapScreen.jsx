@@ -185,7 +185,7 @@ export default function MapScreen() {
                         <div className="flex mb-4">
                             <button
                                 className={`flex-1 py-1 text-center font-semibold border-b-2 ${
-                                    activeTab === "unpp" ? "border-black text-black" : "border-transparent text-[#6A6A6A]"
+                                    activeTab === "unpp" ? "border-black text-black" : "border-transparent text-[#CDCDCD]"
                                 }`}
                                 onClick={() => setActiveTab("unpp")}
                             >
@@ -193,7 +193,7 @@ export default function MapScreen() {
                             </button>
                             <button
                                 className={`flex-1 py-1 text-center font-semibold border-b-2 ${
-                                    activeTab === "set" ? "border-black text-black" : "border-transparent text-[#6A6A6A]"
+                                    activeTab === "set" ? "border-black text-black" : "border-transparent text-[#CDCDCD]"
                                 }`}
                                 onClick={() => setActiveTab("set")}
                             >
@@ -214,21 +214,24 @@ export default function MapScreen() {
                                         />
                                     )}
 
-                                    <table className="w-full text-left mb-4">
+                                    <table className="w-full text-left mb-4 text-[#6A6A6A]">
                                         <tbody>
                                         <tr>
-                                            <td className="font-semibold pr-2">Construction: {selectedPlace.construction_years || "N/A"}</td>
+                                            <td className="">Construction: {selectedPlace.construction_years || "N/A"}</td>
                                         </tr>
                                         <tr>
-                                            <td className="font-semibold pr-2">Planned: {selectedPlace.planned || "N/A"}</td>
+                                            <td className="">Planned: {selectedPlace.planned || "N/A"}</td>
                                         </tr>
                                         <tr>
-                                            <td className="font-semibold pr-2">Status: {selectedPlace.status || "N/A"}</td>
+                                            <td className="">Status: {selectedPlace.status || "N/A"}</td>
                                         </tr>
                                         </tbody>
                                     </table>
 
-                                    <p className="text-gray-700">{selectedPlace.description}</p>
+                                    {selectedPlace.description?.split("\\n").map((line, idx) => (
+                                        <p className="mb-4" key={idx}>{line}</p>
+                                    ))}
+
                                 </div>
                             )}
 
@@ -243,21 +246,23 @@ export default function MapScreen() {
                                         />
                                     )}
 
-                                    <table className="w-full text-left mb-4">
+                                    <table className="w-full text-left mb-4 text-[#6A6A6A]">
                                         <tbody>
                                         <tr>
-                                            <td className="font-semibold pr-2">Est.: {selectedPlace.set_est || "N/A"}</td>
+                                            <td className="">Est.: {selectedPlace.set_est || "N/A"}</td>
                                         </tr>
                                         <tr>
-                                            <td className="font-semibold pr-2">Planned population: {selectedPlace.set_planned_pop || "N/A"}</td>
+                                            <td className="">Planned population: {selectedPlace.set_planned_pop || "N/A"}</td>
                                         </tr>
                                         <tr>
-                                            <td className="font-semibold pr-2">Current population: {selectedPlace.set_cur_pop || "N/A"}</td>
+                                            <td className="">Current population: {selectedPlace.set_cur_pop || "N/A"}</td>
                                         </tr>
                                         </tbody>
                                     </table>
 
-                                    <p className="text-gray-700">{selectedPlace.set_description}</p>
+                                    {selectedPlace.set_description?.split("\\n").map((line, idx) => (
+                                        <p className="mb-4" key={idx}>{line}</p>
+                                    ))}
                                 </div>
                             )}
                         </div>
