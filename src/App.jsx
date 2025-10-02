@@ -250,8 +250,8 @@ export default function App() {
             {/* Routes */}
             <Routes>
                 <Route path="/" element={<Home/>}/>
-                <Route path="/screen2" element={<Screen2/>}/>
-                <Route path="/screen3" element={<Screen3/>}/>
+                <Route path="/landing2" element={<Screen2/>}/>
+                <Route path="/landing3" element={<Screen3/>}/>
                 <Route path="/map" element={<MapScreen/>}/>
                 <Route path="/map/:id" element={<MapScreen/>}/>
             </Routes>

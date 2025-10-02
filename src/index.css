@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -30,43 +32,6 @@ html, body, #root {
   flex-direction: column;
 }
 
-/*.modal-overlay {*/
-/*  position: fixed;*/
-/*  top: 0;*/
-/*  left: 0;*/
-/*  width: 100vw;*/
-/*  height: 100vh;*/
-/*  background: rgba(0,0,0,0.5);*/
-/*  display: flex;*/
-/*  justify-content: center;*/
-/*  align-items: center;*/
-/*  z-index: 9999;*/
-/*}*/
-
-/*.modal-content {*/
-/*  background: #fff;*/
-/*  width: 90vw; !* full-screen on mobile *!*/
-/*  max-width: 400px;*/
-/*  height: 90vh;*/
-/*  border-radius: 8px;*/
-/*  padding: 20px;*/
-/*  transform: translateX(-100%);*/
-/*  opacity: 0;*/
-/*  transition: transform 0.4s ease, opacity 0.4s ease;*/
-/*}*/
-
-/*.modal-content.open {*/
-/*  transform: translateX(0);*/
-/*  opacity: 1;*/
-/*}*/
-
-/*!* Tabs fade effect *!*/
-/*.tab-content {*/
-/*  opacity: 0;*/
-/*  transition: opacity 0.3s ease;*/
-/*  height: auto;*/
-/*}*/
-
-/*.tab-content.active {*/
-/*  opacity: 1;*/
-/*}*/
+body {
+  @apply font-sans;
+}
