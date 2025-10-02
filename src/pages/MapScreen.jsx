@@ -170,14 +170,16 @@ export default function MapScreen() {
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Close button top-left */}
-                        <button
-                            onClick={closeModal}
-                            className="absolute top-4 left-4 p-2 text-gray-700 hover:text-black"
-                            aria-label="Close"
-                        >
-                            ←
-                        </button>
+                        {/* Close button row */}
+                        <div className="flex justify-start mb-4">
+                            <button
+                                onClick={closeModal}
+                                className="p-2 text-gray-700 hover:text-black"
+                                aria-label="Close"
+                            >
+                                ←
+                            </button>
+                        </div>
 
                         {/* Tabs Header */}
                         <div className="flex mb-4 border-b border-gray-300">
