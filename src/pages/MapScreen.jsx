@@ -171,10 +171,10 @@ export default function MapScreen() {
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Close button row */}
-                        <div className="flex justify-start mb-4">
+                        <div className="flex justify-start mb-2">
                             <button
                                 onClick={closeModal}
-                                className="p-2 text-gray-700 hover:text-black"
+                                className="p-1 text-gray-700 hover:text-black"
                                 aria-label="Close"
                             >
                                 ←
@@ -182,18 +182,18 @@ export default function MapScreen() {
                         </div>
 
                         {/* Tabs Header */}
-                        <div className="flex mb-4 border-b border-gray-300">
+                        <div className="flex mb-4">
                             <button
-                                className={`flex-1 py-2 text-center font-semibold transition-colors ${
-                                    activeTab === "unpp" ? "bg-gray-100 text-black" : "text-gray-500 hover:bg-gray-50"
+                                className={`flex-1 py-1 text-center font-semibold border-b-2 ${
+                                    activeTab === "unpp" ? "border-black text-black" : "border-transparent text-[#6A6A6A]"
                                 }`}
                                 onClick={() => setActiveTab("unpp")}
                             >
                                 {selectedPlace.name}
                             </button>
                             <button
-                                className={`flex-1 py-2 text-center font-semibold transition-colors ${
-                                    activeTab === "set" ? "bg-gray-100 text-black" : "text-gray-500 hover:bg-gray-50"
+                                className={`flex-1 py-1 text-center font-semibold border-b-2 ${
+                                    activeTab === "set" ? "border-black text-black" : "border-transparent text-[#6A6A6A]"
                                 }`}
                                 onClick={() => setActiveTab("set")}
                             >
