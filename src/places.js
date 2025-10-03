@@ -153,7 +153,7 @@ export const places = [
     "img_name": "STENDAL_AXO",
     "lat": 52.72421944,
     "lon": 12.0192055556,
-    "set_id": "STENDAL",
+    "set_id": "HOUSING ESTATE SOUTH",
     "set_name": "ESTATE SOUTH, STENDAL, GDR",
     "set_est": "1980s",
     "set_planned_pop": "~8,000",
