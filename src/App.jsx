@@ -136,7 +136,20 @@ export default function App() {
             rafId = requestAnimationFrame(() => {
                 const scrollTop = el.scrollTop;
                 const screenHeight = el.clientHeight;
-                const screenIndex = Math.floor((scrollTop + screenHeight / 2) / screenHeight);
+                let screenIndex = 0;
+                if (scrollTop === 0) { // pathname
+                    if (location.pathname.startsWith("/map")) {
+                        screenIndex = 3;
+                    } else if (location.pathname.startsWith("landing2")) {
+                        screenIndex = 1;
+                    } else if (location.pathname.startsWith("landing3")) {
+                        screenIndex = 2;
+                    }
+                    console.log("forced: " + screenIndex);
+                } else {
+                    screenIndex = Math.floor((scrollTop + screenHeight / 2) / screenHeight);
+                    console.log("calc: " + screenIndex);
+                }
 
                 let top;
                 if (screenIndex === 0) {
@@ -149,7 +162,7 @@ export default function App() {
                     top = `${window.innerHeight * 0.15}px`;
                 } else {
                     // MapScreen: irrelevant (fading out)
-                    top = "20px";
+                    top = "-200px";
                 }
 
                 // Opacity fade into MapScreen
@@ -163,6 +176,8 @@ export default function App() {
                 setImgStyle({top, opacity});
             });
         };
+
+        onScroll();
 
         el.addEventListener("scroll", onScroll, {passive: true});
         return () => {
@@ -195,7 +210,7 @@ export default function App() {
                 id="fixed-unpp"
                 src={process.env.PUBLIC_URL + "/img/unpp.gif"}
                 alt="UNPP animation"
-                className={`fixed h-auto left-1/2 -translate-x-1/2 z-40 transition-all duration-300
+                className={`fixed h-auto left-1/2 -translate-x-1/2 z-10 transition-all duration-300
     ${location.pathname.startsWith("/map")
                     ? "opacity-0"
                     : "opacity-100"}`
@@ -203,6 +218,7 @@ export default function App() {
                 style={{
                     ...imgStyle,
                     width: "80%", // 10% margin
+                    maxWidth: "360px",
                 }}
                 onLoad={(e) => {
                     const imgHeight = e.target.offsetHeight;
