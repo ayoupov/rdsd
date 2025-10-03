@@ -17,6 +17,8 @@ export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const [scrollY, setScrollY] = useState(0);
+    const [imgReady, setImgReady] = useState(false);
+
 
     const screens = useMemo(
         () => [
@@ -91,24 +93,56 @@ export default function App() {
         }, 500);
     }, [location.pathname, screens]);
 
-    // Scroll listener for route sync and image animation
+    // Scroll listener for image animation
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
 
         let rafId = null;
 
+        const updateVisuals = () => {
+            console.log("updateVisuals");
+            const scrollTop = el.scrollTop;
+            const screenHeight = el.clientHeight;
+
+            let screenIndex = 0;
+            if (scrollTop === 0) {
+                if (location.pathname.startsWith("/map")) screenIndex = 3;
+                else if (location.pathname.startsWith("/landing2")) screenIndex = 1;
+                else if (location.pathname.startsWith("/landing3")) screenIndex = 2;
+            } else {
+                screenIndex = Math.floor((scrollTop + screenHeight / 2) / screenHeight);
+            }
+
+            let top;
+            if (screenIndex === 0) {
+                const imgEl = document.getElementById("fixed-unpp");
+                const imgHeight = imgEl ? imgEl.offsetHeight : 100;
+                top = `${window.innerHeight * 0.9 - imgHeight}px`;
+            } else if (screenIndex === 1 || screenIndex === 2) {
+                top = `${window.innerHeight * 0.15}px`;
+            } else {
+                top = "20px";
+            }
+
+            let opacity = 1;
+            const fadeStart = screenHeight * 2;
+            const fadeEnd = screenHeight * 2.2;
+            if (scrollTop > fadeStart) {
+                opacity = scrollTop >= fadeEnd ? 0 : 1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart);
+            }
+
+            setImgStyle({top, opacity});
+            setScrollY(scrollTop);
+        };
+
         const onScroll = () => {
             if (programmaticScrollRef.current || isFirstLoadRef.current) return;
 
-            setScrollY(el.scrollTop);
-
-            // Route sync debounce
             if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
             scrollDebounceRef.current = setTimeout(() => {
                 const scrollPos = el.scrollTop;
                 const children = Array.from(el.children);
-
                 let closestIdx = 0;
                 let closestDist = Infinity;
                 children.forEach((child, idx) => {
@@ -118,66 +152,21 @@ export default function App() {
                         closestIdx = idx;
                     }
                 });
-
                 let targetPath = screens[closestIdx].path;
                 if (targetPath === "/map") targetPath = lastMapPathRef.current;
-
                 if (location.pathname !== targetPath) {
                     programmaticScrollRef.current = true;
                     navigate(targetPath, {replace: true});
-                    setTimeout(() => {
-                        programmaticScrollRef.current = false;
-                    }, 600);
+                    setTimeout(() => (programmaticScrollRef.current = false), 600);
                 }
             }, 120);
 
-            // Image animation
             if (rafId) cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(() => {
-                const scrollTop = el.scrollTop;
-                const screenHeight = el.clientHeight;
-                let screenIndex = 0;
-                if (scrollTop === 0) { // pathname
-                    if (location.pathname.startsWith("/map")) {
-                        screenIndex = 3;
-                    } else if (location.pathname.startsWith("landing2")) {
-                        screenIndex = 1;
-                    } else if (location.pathname.startsWith("landing3")) {
-                        screenIndex = 2;
-                    }
-                    console.log("forced: " + screenIndex);
-                } else {
-                    screenIndex = Math.floor((scrollTop + screenHeight / 2) / screenHeight);
-                    console.log("calc: " + screenIndex);
-                }
-
-                let top;
-                if (screenIndex === 0) {
-                    // Home: fixed at bottom with 10% margin
-                    const imgEl = document.getElementById("fixed-unpp");
-                    const imgHeight = imgEl ? imgEl.offsetHeight : 100;
-                    top = `${window.innerHeight * 0.9 - imgHeight}px`;
-                } else if (screenIndex === 1 || screenIndex === 2) {
-                    // Screens 2 & 3: fixed at 10% from top
-                    top = `${window.innerHeight * 0.15}px`;
-                } else {
-                    // MapScreen: irrelevant (fading out)
-                    top = "-200px";
-                }
-
-                // Opacity fade into MapScreen
-                let opacity = 1;
-                const fadeStart = screenHeight * 2; // start fading after Screen3
-                const fadeEnd = screenHeight * 2.2;
-                if (scrollTop > fadeStart) {
-                    opacity = scrollTop >= fadeEnd ? 0 : 1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart);
-                }
-
-                setImgStyle({top, opacity});
-            });
+            rafId = requestAnimationFrame(updateVisuals);
         };
 
-        onScroll();
+        // ✅ run once on mount & on pathname change
+        updateVisuals();
 
         el.addEventListener("scroll", onScroll, {passive: true});
         return () => {
@@ -210,11 +199,9 @@ export default function App() {
                 id="fixed-unpp"
                 src={process.env.PUBLIC_URL + "/img/unpp.gif"}
                 alt="UNPP animation"
-                className={`fixed h-auto left-1/2 -translate-x-1/2 z-10 transition-all duration-300
-    ${location.pathname.startsWith("/map")
-                    ? "opacity-0"
-                    : "opacity-100"}`
-                }
+                className={`fixed h-auto left-1/2 -translate-x-1/2 z-10
+                            ${!imgReady ? "" : "transition-all duration-300"}
+                            ${location.pathname.startsWith("/map") ? "opacity-0" : "opacity-100"}`}
                 style={{
                     ...imgStyle,
                     width: "80%", // 10% margin
@@ -226,6 +213,7 @@ export default function App() {
                         ...prev,
                         top: `${window.innerHeight * 0.9 - imgHeight}px`,
                     }));
+                    setImgReady(true); // ✅ enable transitions only after positioned once
                 }}
             />
 
