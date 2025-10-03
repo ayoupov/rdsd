@@ -10,7 +10,7 @@ export default function LogoHeader({ scrollY, scrollToHome }) {
 
     const width = initialWidth - (initialWidth - finalWidth) * factor;
     const height = initialHeight - (initialHeight - finalHeight) * factor;
-    const top = 24 - 22 * factor;
+    const top = 32 - 22 * factor;
 
     return (
         <div

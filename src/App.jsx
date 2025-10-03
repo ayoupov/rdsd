@@ -110,7 +110,7 @@ export default function App() {
         if (screenIndex === 0) {
             top = `${window.innerHeight * 0.95 - imgHeightRef.current}px`;
         } else if (screenIndex === 1 || screenIndex === 2) {
-            top = `${window.innerHeight * 0.15}px`;
+            top = `${window.innerHeight * 0.13}px`;
         }
 
         let opacity = 1;
@@ -208,7 +208,9 @@ export default function App() {
                             ${imgReady ? "transition-all duration-300" : ""}`}
                 style={{
                     ...imgStyle,
-                    width: "80%",
+                    width: "100%",
+                    paddingLeft: "16px",
+                    paddingRight: "16px",
                     maxWidth: "360px",
                     pointerEvents: "none",
                 }}
@@ -218,7 +220,7 @@ export default function App() {
             {/* Burger menu */}
             {showBurger && (
                 <button
-                    className="fixed top-4 right-4 z-50 p-2 rounded-md focus:outline-none"
+                    className="fixed top-[16px] right-4 z-50 p-2 rounded-md focus:outline-none"
                     style={{backgroundColor: "rgba(0,0,0,0)"}}
                     onClick={() => setMenuOpen(true)}
                 >
