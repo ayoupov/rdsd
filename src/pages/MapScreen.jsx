@@ -43,7 +43,7 @@ function FlyToLocation({ flyTo }) {
 export default function MapScreen() {
     const params = useParams();
     const navigate = useNavigate();
-    const id = params.id ? Number(params.id) : places[0].id;
+    const id = params.id || places[0].id;
 
     // Precompute scaledLat for all places
     const scaledPlaces = places.map((p) => ({
@@ -78,6 +78,7 @@ export default function MapScreen() {
         setActivePlace(place);
         setFlyTo([place.scaledLat, place.lon]);
         setSelectedIndex(scaledPlaces.findIndex((p) => p.id === place.id));
+        navigate(`/map/${place.id}`);
     };
 
     // Handle clicking a scroller item (open popup)
@@ -85,6 +86,7 @@ export default function MapScreen() {
         setSelectedPlace(place);
         setActiveTab("unpp");
         setIsClosing(false);
+        navigate(`/map/${place.id}`);
     };
 
     // Handle marker click (scroll scroller)
@@ -92,6 +94,7 @@ export default function MapScreen() {
         const index = scaledPlaces.findIndex((p) => p.id === place.id);
         setSelectedIndex(index); // StepScroller will scroll to top
         setActivePlace(place);
+        navigate(`/map/${place.id}`);
     };
 
     const closeModal = () => {
