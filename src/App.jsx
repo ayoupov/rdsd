@@ -17,9 +17,13 @@ export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const [scrollY, setScrollY] = useState(0);
-    const [imgReady, setImgReady] = useState(false);
 
+    const programmaticScrollRef = useRef(false);
+    const scrollDebounceRef = useRef(null);
+    const lastMapPathRef = useRef("/map");
+    const isFirstLoadRef = useRef(true);
 
+    // Screens
     const screens = useMemo(
         () => [
             {name: "Home", path: "/", component: <Home/>},
@@ -30,22 +34,19 @@ export default function App() {
         []
     );
 
-    const programmaticScrollRef = useRef(false);
-    const scrollDebounceRef = useRef(null);
-    const lastMapPathRef = useRef("/map");
-    const isFirstLoadRef = useRef(true);
-
-    // Fixed image style
+    // UNPP image state
+    const imgHeightRef = useRef(0);
     const [imgStyle, setImgStyle] = useState({top: "0px", opacity: 1});
+    const [imgReady, setImgReady] = useState(false);
 
-    // Track last Map subroute
+    // Track last map subroute
     useEffect(() => {
         if (location.pathname.startsWith("/map")) {
             lastMapPathRef.current = location.pathname;
         }
     }, [location.pathname]);
 
-    // Scroll to screen programmatically
+    // Programmatic scroll to screen
     const scrollToScreen = (index) => {
         if (!containerRef.current) return;
         const top = containerRef.current.children[index].offsetTop;
@@ -65,7 +66,7 @@ export default function App() {
         setMenuOpen(false);
     };
 
-    // Sync scroll on route change
+    // Sync scroll with route change
     useEffect(() => {
         let normalized = location.pathname;
         if (location.pathname.startsWith("/map")) normalized = "/map";
@@ -93,52 +94,46 @@ export default function App() {
         }, 500);
     }, [location.pathname, screens]);
 
-    // Scroll listener for image animation
+    // Unified image style updater
+    const updateImageStyle = (scrollTop, screenHeight, pathname) => {
+        let screenIndex = 0;
+
+        if (scrollTop === 0) {
+            if (pathname.startsWith("/map")) screenIndex = 3;
+            else if (pathname.startsWith("/landing2")) screenIndex = 1;
+            else if (pathname.startsWith("/landing3")) screenIndex = 2;
+        } else {
+            screenIndex = Math.floor((scrollTop + screenHeight / 2) / screenHeight);
+        }
+
+        let top = "0px";
+        if (screenIndex === 0) {
+            top = `${window.innerHeight * 0.9 - imgHeightRef.current}px`;
+        } else if (screenIndex === 1 || screenIndex === 2) {
+            top = `${window.innerHeight * 0.15}px`;
+        }
+
+        let opacity = 1;
+        const fadeStart = screenHeight * 2;
+        const fadeEnd = screenHeight * 2.2;
+        if (scrollTop > fadeStart) {
+            opacity = scrollTop >= fadeEnd ? 0 : 1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart);
+        }
+        if (pathname.startsWith("/map")) {
+            opacity = 0;
+        }
+
+        setImgStyle({top, opacity});
+    };
+
+    // Scroll listener
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
 
         let rafId = null;
-
-        const updateVisuals = () => {
-            console.log("updateVisuals");
-            const scrollTop = el.scrollTop;
-            const screenHeight = el.clientHeight;
-
-            let screenIndex = 0;
-            if (scrollTop === 0) {
-                if (location.pathname.startsWith("/map")) screenIndex = 3;
-                else if (location.pathname.startsWith("/landing2")) screenIndex = 1;
-                else if (location.pathname.startsWith("/landing3")) screenIndex = 2;
-            } else {
-                screenIndex = Math.floor((scrollTop + screenHeight / 2) / screenHeight);
-            }
-
-            let top;
-            if (screenIndex === 0) {
-                const imgEl = document.getElementById("fixed-unpp");
-                const imgHeight = imgEl ? imgEl.offsetHeight : 100;
-                top = `${window.innerHeight * 0.9 - imgHeight}px`;
-            } else if (screenIndex === 1 || screenIndex === 2) {
-                top = `${window.innerHeight * 0.15}px`;
-            } else {
-                top = "20px";
-            }
-
-            let opacity = 1;
-            const fadeStart = screenHeight * 2;
-            const fadeEnd = screenHeight * 2.2;
-            if (scrollTop > fadeStart) {
-                opacity = scrollTop >= fadeEnd ? 0 : 1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart);
-            }
-
-            setImgStyle({top, opacity});
-            setScrollY(scrollTop);
-        };
-
         const onScroll = () => {
             if (programmaticScrollRef.current || isFirstLoadRef.current) return;
-
             if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
             scrollDebounceRef.current = setTimeout(() => {
                 const scrollPos = el.scrollTop;
@@ -162,11 +157,14 @@ export default function App() {
             }, 120);
 
             if (rafId) cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(updateVisuals);
+            rafId = requestAnimationFrame(() => {
+                updateImageStyle(el.scrollTop, el.clientHeight, location.pathname);
+                setScrollY(el.scrollTop);
+            });
         };
 
-        // ✅ run once on mount & on pathname change
-        updateVisuals();
+        // Run once
+        updateImageStyle(el.scrollTop, el.clientHeight, location.pathname);
 
         el.addEventListener("scroll", onScroll, {passive: true});
         return () => {
@@ -174,9 +172,9 @@ export default function App() {
             if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
             if (rafId) cancelAnimationFrame(rafId);
         };
-    }, [navigate, location.pathname, screens]);
+    }, [location.pathname, navigate, screens]);
 
-    // Flip first load flag on first user scroll
+    // First scroll disables firstLoadRef
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
@@ -186,6 +184,13 @@ export default function App() {
         el.addEventListener("scroll", onFirstScroll, {once: true});
         return () => el.removeEventListener("scroll", onFirstScroll);
     }, []);
+
+    // Handle image load
+    const handleImageLoad = (e) => {
+        imgHeightRef.current = e.target.offsetHeight;
+        updateImageStyle(containerRef.current.scrollTop, containerRef.current.clientHeight, location.pathname);
+        setImgReady(true); // enable transitions only after first position
+    };
 
     const currentScreen = Math.floor((scrollY + window.innerHeight / 2) / window.innerHeight);
     const showBurger = currentScreen !== 0;
@@ -200,28 +205,20 @@ export default function App() {
                 src={process.env.PUBLIC_URL + "/img/unpp.gif"}
                 alt="UNPP animation"
                 className={`fixed h-auto left-1/2 -translate-x-1/2 z-10
-                            ${!imgReady ? "" : "transition-all duration-300"}
-                            ${location.pathname.startsWith("/map") ? "opacity-0" : "opacity-100"}`}
+                            ${imgReady ? "transition-all duration-300" : ""}`}
                 style={{
                     ...imgStyle,
-                    width: "80%", // 10% margin
+                    width: "80%",
                     maxWidth: "360px",
                 }}
-                onLoad={(e) => {
-                    const imgHeight = e.target.offsetHeight;
-                    setImgStyle((prev) => ({
-                        ...prev,
-                        top: `${window.innerHeight * 0.9 - imgHeight}px`,
-                    }));
-                    setImgReady(true); // ✅ enable transitions only after positioned once
-                }}
+                onLoad={handleImageLoad}
             />
 
             {/* Burger menu */}
             {showBurger && (
                 <button
                     className="fixed top-4 right-4 z-50 p-2 rounded-md focus:outline-none"
-                    style={{backgroundColor: "rgba(0,0,0,0)"}} // transparent 50%
+                    style={{backgroundColor: "rgba(0,0,0,0)"}}
                     onClick={() => setMenuOpen(true)}
                 >
                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -230,27 +227,33 @@ export default function App() {
                 </button>
             )}
 
-            {/* Overlay menu */}
-            {menuOpen && <OverlayMenu
-                closeMenu={() => setMenuOpen(false)}
-                openAbout={() => {
-                    setMenuOpen(false);
-                    setAboutOpen(true);
-                }}
-                openSupport={() => {
-                    setMenuOpen(false);
-                    setSupportOpen(true);
-                }}
-            />}
+            {/* Overlay menu + modals */}
+            {menuOpen && (
+                <OverlayMenu
+                    closeMenu={() => setMenuOpen(false)}
+                    openAbout={() => {
+                        setMenuOpen(false);
+                        setAboutOpen(true);
+                    }}
+                    openSupport={() => {
+                        setMenuOpen(false);
+                        setSupportOpen(true);
+                    }}
+                />
+            )}
             {aboutOpen && <AboutModal closeModal={() => setAboutOpen(false)}/>}
             {supportOpen && <SupportModal closeModal={() => setSupportOpen(false)}/>}
 
             {/* Scroll container */}
-            <div ref={containerRef}
-                 className="scroll-container h-screen w-screen overflow-y-scroll scroll-snap-y snap-mandatory">
+            <div
+                ref={containerRef}
+                className="scroll-container h-screen w-screen overflow-y-scroll scroll-snap-y snap-mandatory"
+            >
                 {screens.map((screen, idx) => (
-                    <div key={idx}
-                         className="scroll-screen h-screen w-screen snap-start flex justify-center items-center">
+                    <div
+                        key={idx}
+                        className="scroll-screen h-screen w-screen snap-start flex justify-center items-center"
+                    >
                         {screen.component}
                     </div>
                 ))}
