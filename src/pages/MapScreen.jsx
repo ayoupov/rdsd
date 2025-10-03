@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { ImageOverlay, MapContainer, Marker, useMap } from "react-leaflet";
+import React, {useEffect, useState} from "react";
+import {ImageOverlay, MapContainer, Marker, useMap} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import StepScroller from "../components/StepScroller";
 import PlaceModal from "../components/PlaceModal";
-import { useNavigate, useParams } from "react-router-dom";
-import { places } from "../places";
+import {useLocation, useNavigate} from "react-router-dom";
+import {places} from "../places";
 
 // Default bounds and latScale
-const DEFAULT = { west: -180, east: 180, south: -65, north: 90, latScale: 0.918 };
+const DEFAULT = {west: -180, east: 180, south: -65, north: 90, latScale: 0.918};
 
 // Leaflet icons
 const defaultIcon = new L.Icon({
@@ -32,7 +32,7 @@ const applyLatScale = (lat) => {
 };
 
 // FlyTo component
-function FlyToLocation({ flyTo }) {
+function FlyToLocation({flyTo}) {
     const map = useMap();
     useEffect(() => {
         if (flyTo?.length === 2) map.flyTo(flyTo, 4);
@@ -41,9 +41,18 @@ function FlyToLocation({ flyTo }) {
 }
 
 export default function MapScreen() {
-    const params = useParams();
+    const location = useLocation();
     const navigate = useNavigate();
-    const id = params.id || places[0].id;
+    const [id, setId] = useState(places[0].id);
+
+    // const id = params.id || places[0].id;
+
+    useEffect(() => {
+        const parts = location.pathname.split("/");
+        if (parts[1] === "map" && parts[2] && places.find((p) => p.id === parts[2])) {
+            setId(parts[2]);
+        }
+    }, [location]);
 
     // Precompute scaledLat for all places
     const scaledPlaces = places.map((p) => ({
@@ -128,7 +137,7 @@ export default function MapScreen() {
                 zoom={5}
                 maxZoom={5}
                 scrollWheelZoom={false}
-                style={{ height: "100%", width: "100%", zIndex: 0, position: "absolute" }}
+                style={{height: "100%", width: "100%", zIndex: 0, position: "absolute"}}
                 worldCopyJump={true}
                 maxBounds={mainBounds}
                 maxBoundsViscosity={1.0}
@@ -136,20 +145,20 @@ export default function MapScreen() {
                 zoomControl={false}
                 attributionControl={false}
             >
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds} />
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={leftBounds} />
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={rightBounds} />
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds}/>
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={leftBounds}/>
+                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={rightBounds}/>
 
                 {scaledPlaces.map((place) => (
                     <Marker
                         key={place.id}
                         position={[place.scaledLat, place.lon]}
                         icon={activePlace.id === place.id ? selectedIcon : defaultIcon}
-                        eventHandlers={{ click: () => handleMarkerClick(place) }}
+                        eventHandlers={{click: () => handleMarkerClick(place)}}
                     />
                 ))}
 
-                <FlyToLocation flyTo={flyTo} />
+                <FlyToLocation flyTo={flyTo}/>
             </MapContainer>
 
             <div className="absolute bottom-0 w-full">

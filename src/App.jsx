@@ -3,7 +3,7 @@ import Home from "./pages/Home";
 import Screen2 from "./pages/Screen2";
 import Screen3 from "./pages/Screen3";
 import MapScreen from "./pages/MapScreen";
-import {Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import LogoHeader from "./components/LogoHeader.jsx";
 import OverlayMenu from "./components/OverlayMenu.jsx";
 import AboutModal from "./components/AboutModal.jsx";
@@ -249,14 +249,6 @@ export default function App() {
                     </div>
                 ))}
             </div>
-
-            {/* Routes */}
-            <Routes>
-                <Route path="/" element={<Home/>}/>
-                <Route path="/landing2" element={<Screen2/>}/>
-                <Route path="/landing3" element={<Screen3/>}/>
-                <Route path="/map/:id?" element={<MapScreen/>}/>
-            </Routes>
         </div>
     );
 }
