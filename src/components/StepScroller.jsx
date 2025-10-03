@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
+import React, {useEffect, useLayoutEffect, useRef, useState} from "react";
 
 export default function StepScroller({
                                          items,
@@ -47,7 +47,7 @@ export default function StepScroller({
 
         setTopIndex(idx);
         if (containerRef.current) {
-            containerRef.current.scrollTo({ top: idx * ITEM_HEIGHT, behavior: "smooth" });
+            containerRef.current.scrollTo({top: idx * ITEM_HEIGHT, behavior: "smooth"});
         }
         // do not call onItemSelect here to avoid double-calls
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,7 +65,7 @@ export default function StepScroller({
         if (onItemSelect) onItemSelect(items[newIndex]);
 
         if (containerRef.current) {
-            containerRef.current.scrollTo({ top: newIndex * ITEM_HEIGHT, behavior: "smooth" });
+            containerRef.current.scrollTo({top: newIndex * ITEM_HEIGHT, behavior: "smooth"});
         }
 
         setTimeout(() => setScrolling(false), ANIM_MS);
@@ -82,7 +82,7 @@ export default function StepScroller({
             scrollStep(e.deltaY > 0 ? 1 : -1);
         };
 
-        el.addEventListener("wheel", handleWheel, { passive: false });
+        el.addEventListener("wheel", handleWheel, {passive: false});
         return () => el.removeEventListener("wheel", handleWheel);
     }, [topIndex, scrolling, items]);
 
@@ -107,8 +107,8 @@ export default function StepScroller({
             touchStartY.current = null;
         };
 
-        el.addEventListener("touchstart", handleTouchStart, { passive: true });
-        el.addEventListener("touchend", handleTouchEnd, { passive: true });
+        el.addEventListener("touchstart", handleTouchStart, {passive: true});
+        el.addEventListener("touchend", handleTouchEnd, {passive: true});
         return () => {
             el.removeEventListener("touchstart", handleTouchStart);
             el.removeEventListener("touchend", handleTouchEnd);
@@ -124,8 +124,8 @@ export default function StepScroller({
     return (
         <div
             ref={containerRef}
-            className="overflow-hidden h-60 cursor-pointer rounded-xs px-4"
-            style={{ scrollBehavior: "smooth", touchAction: "none" }}
+            className="overflow-hidden h-60 cursor-pointer rounded-sm px-4"
+            style={{scrollBehavior: "smooth", touchAction: "none"}}
         >
             {items.map((item, idx) => {
                 const position = (idx - topIndex + items.length) % items.length;
@@ -134,7 +134,7 @@ export default function StepScroller({
                 return (
                     <button
                         key={item.id}
-                        className="w-full my-1 px-2 py-3 text-left rounded-lg flex justify-between items-center"
+                        className="w-full my-1 px-3 py-3 text-left rounded-lg flex justify-between items-center"
                         style={{
                             backgroundColor: "transparent",
                             color: "#FFFFFF",
@@ -153,9 +153,14 @@ export default function StepScroller({
             <span className="overflow-hidden text-ellipsis">
               {item.name} / {item.set_name}
             </span>
-                        <span className="ml-2 font-bold" style={{ opacity }}>
-              {">"}
-            </span>
+                        {/*            <span className="ml-2 font-bold" style={{ opacity }}>*/}
+                        {/*  {">"}*/}
+                        {/*</span>*/}
+                        <span className="ml-2" style={{opacity, display: "flex", alignItems: "center"}}>
+  <svg width="9" height="14" viewBox="0 0 9 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0 0 L9 7 L0 14" stroke="white" strokeWidth="2"/>
+  </svg>
+</span>
                     </button>
                 );
             })}
