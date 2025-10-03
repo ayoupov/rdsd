@@ -20,7 +20,7 @@ export default function StepScroller({
     const [topIndex, setTopIndex] = useState(() => normalizeIndex(selectedIndex));
 
     const [scrolling, setScrolling] = useState(false);
-    const ITEM_HEIGHT = 48;            // px, must match rendered item height (including margin)
+    const ITEM_HEIGHT = 46;            // px, must match rendered item height (including margin)
     const ANIM_MS = 200;
 
     // ---- set initial DOM scroll BEFORE paint (avoid flicker)
@@ -124,7 +124,7 @@ export default function StepScroller({
     return (
         <div
             ref={containerRef}
-            className="overflow-hidden h-60 cursor-pointer rounded-lg px-[5%]"
+            className="overflow-hidden h-60 cursor-pointer rounded-xs px-4"
             style={{ scrollBehavior: "smooth", touchAction: "none" }}
         >
             {items.map((item, idx) => {
@@ -134,13 +134,13 @@ export default function StepScroller({
                 return (
                     <button
                         key={item.id}
-                        className="w-full my-1 px-4 py-3 text-left rounded-lg flex justify-between items-center"
+                        className="w-full my-1 px-2 py-3 text-left rounded-lg flex justify-between items-center"
                         style={{
                             backgroundColor: "transparent",
                             color: "#FFFFFF",
-                            border: "1px solid rgba(255,255,255,0.5)",
+                            border: "1px solid rgba(255,255,255,1)",
                             boxShadow: "0 2px 6px rgba(0,0,0,0.3)",
-                            textShadow: "0 1px 3px rgba(0,0,0,0.6)",
+                            textShadow: "0 2px 3px rgba(0,0,0,0.6)",
                             whiteSpace: "nowrap",
                             overflow: "hidden",
                             textOverflow: "ellipsis",

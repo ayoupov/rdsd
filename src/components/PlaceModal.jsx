@@ -3,6 +3,7 @@ import React from "react";
 
 export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, closeModal, isClosing }) {
     if (!selectedPlace) return null;
+    const showImages = false;
 
     return (
         <div
@@ -21,7 +22,7 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
                 <div className="flex justify-start mb-2">
                     <button
                         onClick={closeModal}
-                        className="p-1 text-gray-700 hover:text-black"
+                        className="text-gray-700 hover:text-black text-xl"
                         aria-label="Close"
                     >
                         ←
@@ -53,7 +54,7 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
                     {/* UNPP Tab */}
                     {activeTab === "unpp" && (
                         <div className="transition-opacity duration-300 opacity-100">
-                            {selectedPlace.img_name && (
+                            {showImages && selectedPlace.img_name && (
                                 <img
                                     src={process.env.PUBLIC_URL + "/img/IMG_UNPP/" + selectedPlace.img_name + ".png"}
                                     alt={selectedPlace.name}
@@ -84,7 +85,7 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
                     {/* Set Tab */}
                     {activeTab === "set" && (
                         <div className="transition-opacity duration-300 opacity-100">
-                            {selectedPlace.set_id && (
+                            {showImages && selectedPlace.set_id && (
                                 <img
                                     src={process.env.PUBLIC_URL + "/img/IMG_SETTLEMENT/" + selectedPlace.set_id + "_MAP.png"}
                                     alt={selectedPlace.name + " settlement"}
