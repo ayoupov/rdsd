@@ -191,25 +191,27 @@ export default function App() {
             <LogoHeader scrollY={scrollY} scrollToHome={() => scrollToScreen(0)}/>
 
             {/* UNPP Animation Image */}
-            {!location.pathname.startsWith("/map") && (
-                <img
-                    id="fixed-unpp"
-                    src={process.env.PUBLIC_URL + "/img/unpp.gif"}
-                    alt="UNPP animation"
-                    className="fixed h-auto left-1/2 -translate-x-1/2 z-40 pointer-events-none transition-all duration-100"
-                    style={{
-                        ...imgStyle,
-                        width: "80%", // 10% margin on each side
-                    }}
-                    onLoad={(e) => {
-                        const imgHeight = e.target.offsetHeight;
-                        setImgStyle((prev) => ({
-                            ...prev,
-                            top: `${window.innerHeight * 0.9 - imgHeight}px`,
-                        }));
-                    }}
-                />
-            )}
+            <img
+                id="fixed-unpp"
+                src={process.env.PUBLIC_URL + "/img/unpp.gif"}
+                alt="UNPP animation"
+                className={`fixed h-auto left-1/2 -translate-x-1/2 z-40 transition-all duration-300
+    ${location.pathname.startsWith("/map")
+                    ? "opacity-0"
+                    : "opacity-100"}`
+                }
+                style={{
+                    ...imgStyle,
+                    width: "80%", // 10% margin
+                }}
+                onLoad={(e) => {
+                    const imgHeight = e.target.offsetHeight;
+                    setImgStyle((prev) => ({
+                        ...prev,
+                        top: `${window.innerHeight * 0.9 - imgHeight}px`,
+                    }));
+                }}
+            />
 
             {/* Burger menu */}
             {showBurger && (
