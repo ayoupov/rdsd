@@ -51,15 +51,15 @@ export default function MapScreen() {
         scaledLat: applyLatScale(p.lat),
     }));
 
-    const initialPlace = scaledPlaces.find((p) => p.id === id) || scaledPlaces[0];
+    const initialPlace = scaledPlaces.find((p) => p.id === id);
 
-    const [activePlace, setActivePlace] = useState(initialPlace);
+    const [activePlace, setActivePlace] = useState(scaledPlaces.findIndex((p) => p.id === id));
     const [flyTo, setFlyTo] = useState([initialPlace.scaledLat, initialPlace.lon]);
     const [selectedIndex, setSelectedIndex] = useState(
         scaledPlaces.findIndex((p) => p.id === id)
     );
 
-    const [selectedPlace, setSelectedPlace] = useState(null);
+    const [selectedPlaceForModal, setSelectedPlaceForModal] = useState(null);
     const [activeTab, setActiveTab] = useState("unpp");
     const [isClosing, setIsClosing] = useState(false);
 
@@ -83,7 +83,7 @@ export default function MapScreen() {
 
     // Handle clicking a scroller item (open popup)
     const handleItemClick = (place) => {
-        setSelectedPlace(place);
+        setSelectedPlaceForModal(place);
         setActiveTab("unpp");
         setIsClosing(false);
         navigate(`/map/${place.id}`);
@@ -100,7 +100,7 @@ export default function MapScreen() {
     const closeModal = () => {
         setIsClosing(true);
         setTimeout(() => {
-            setSelectedPlace(null);
+            setSelectedPlaceForModal(null);
             setIsClosing(false);
         }, 400);
     };
@@ -162,7 +162,7 @@ export default function MapScreen() {
             </div>
 
             <PlaceModal
-                selectedPlace={selectedPlace}
+                selectedPlace={selectedPlaceForModal}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 closeModal={closeModal}

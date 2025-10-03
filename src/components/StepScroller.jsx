@@ -1,95 +1,119 @@
-import React, {useRef, useState, useEffect, useLayoutEffect} from "react";
+import React, { useRef, useState, useEffect, useLayoutEffect } from "react";
 
-export default function StepScroller({ items, selectedIndex, onItemSelect, onItemClick }) {
+export default function StepScroller({
+                                         items,
+                                         selectedIndex = 0,      // controlled initial index from parent (string id index)
+                                         onItemSelect,           // called only when user scrolls (not when parent drives selectedIndex)
+                                         onItemClick,
+                                     }) {
     const containerRef = useRef(null);
-    const [topIndex, setTopIndex] = useState(selectedIndex);
-    const [scrolling, setScrolling] = useState(false);
-
-    const ITEM_HEIGHT = 50;
-
-    const touchStartY = useRef(0);
-
     const isMountedRef = useRef(false);
 
-    // and now i hanged chatgpt, alas
+    // Normalize incoming index to valid integer
+    const normalizeIndex = (idx) => {
+        if (!items || items.length === 0) return 0;
+        const n = ((idx % items.length) + items.length) % items.length;
+        return n;
+    };
 
-    // --- Immediately set scroll position on first mount (no animation) ---
+    // Initialize internal topIndex from selectedIndex so first render is correct
+    const [topIndex, setTopIndex] = useState(() => normalizeIndex(selectedIndex));
+
+    const [scrolling, setScrolling] = useState(false);
+    const ITEM_HEIGHT = 48;            // px, must match rendered item height (including margin)
+    const ANIM_MS = 200;
+
+    // ---- set initial DOM scroll BEFORE paint (avoid flicker)
     useLayoutEffect(() => {
-        if (!isMountedRef.current) { // that fixes run once
-            console.log(selectedIndex);
-            const idx = ((selectedIndex % items.length) + items.length) % items.length;
-            setTopIndex(idx);
-            if (containerRef.current) {
-                // set instant position before paint to avoid flicker
-                containerRef.current.scrollTop = idx * ITEM_HEIGHT;
-            }
-            isMountedRef.current = true;
-            // run only once
-            // eslint-disable-next-line react-hooks/exhaustive-deps
+        const idx = normalizeIndex(selectedIndex);
+        setTopIndex(idx); // safe: this sets initial internal state to match prop
+        if (containerRef.current) {
+            // set scrollTop instantly (no smooth) to avoid visual jump
+            containerRef.current.scrollTop = idx * ITEM_HEIGHT;
+            console.log(topIndex, containerRef.current.scrollTop, idx * ITEM_HEIGHT);
         }
+        // mark mounted; StrictMode may call this twice during dev, but we do not do any destructive side-effects here
+        isMountedRef.current = true;
+        // run only on mount
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const scrollStep = (delta) => {
-        if (scrolling) return;
+    // ---- if parent changes selectedIndex after mount, animate to it.
+    //      do NOT call onItemSelect here (parent already drove the selection).
+    useEffect(() => {
+        if (!isMountedRef.current) return; // skip initial mount (already positioned)
+        const idx = normalizeIndex(selectedIndex);
+        if (idx === topIndex) return;
 
-        const newIndex = (topIndex + delta + items.length) % items.length;
+        setTopIndex(idx);
+        if (containerRef.current) {
+            containerRef.current.scrollTo({ top: idx * ITEM_HEIGHT, behavior: "smooth" });
+        }
+        // do not call onItemSelect here to avoid double-calls
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedIndex]);
+
+    // ---- user-driven one-step scroll
+    const scrollStep = (delta) => {
+        if (scrolling || !items || items.length === 0) return;
+
+        const newIndex = normalizeIndex(topIndex + delta);
         setTopIndex(newIndex);
         setScrolling(true);
 
+        // call parent only for user interactions
         if (onItemSelect) onItemSelect(items[newIndex]);
 
         if (containerRef.current) {
-            containerRef.current.scrollTo({
-                top: newIndex * ITEM_HEIGHT,
-                behavior: "smooth",
-            });
+            containerRef.current.scrollTo({ top: newIndex * ITEM_HEIGHT, behavior: "smooth" });
         }
 
-        setTimeout(() => setScrolling(false), 200);
+        setTimeout(() => setScrolling(false), ANIM_MS);
     };
 
-    const handleWheel = (e) => {
-        e.preventDefault();
-        scrollStep(e.deltaY > 0 ? 1 : -1);
-    };
-
-    const handleTouchStart = (e) => {
-        if (e.touches.length === 1) {
-            touchStartY.current = e.touches[0].clientY;
-        }
-    };
-
-    const handleTouchEnd = (e) => {
-        if (scrolling) return;
-
-        const deltaY = e.changedTouches[0].clientY - touchStartY.current;
-        if (Math.abs(deltaY) > 10) {
-            scrollStep(deltaY < 0 ? 1 : -1); // swipe up = scroll down
-        }
-    };
-
+    // ---- wheel handler: attach as non-passive so preventDefault works
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
 
+        const handleWheel = (e) => {
+            e.preventDefault(); // block native inertia scrolling
+            // one step per event
+            scrollStep(e.deltaY > 0 ? 1 : -1);
+        };
+
         el.addEventListener("wheel", handleWheel, { passive: false });
+        return () => el.removeEventListener("wheel", handleWheel);
+    }, [topIndex, scrolling, items]);
+
+    // ---- touch handlers (swipe up/down = one step)
+    const touchStartY = useRef(null);
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        const handleTouchStart = (e) => {
+            if (e.touches.length === 1) touchStartY.current = e.touches[0].clientY;
+        };
+        const handleTouchEnd = (e) => {
+            if (scrolling) return;
+            const start = touchStartY.current;
+            if (start == null) return;
+            const end = e.changedTouches[0].clientY;
+            const d = end - start;
+            if (Math.abs(d) > 10) {
+                scrollStep(d < 0 ? 1 : -1); // swipe up -> step down
+            }
+            touchStartY.current = null;
+        };
+
         el.addEventListener("touchstart", handleTouchStart, { passive: true });
         el.addEventListener("touchend", handleTouchEnd, { passive: true });
-
         return () => {
-            el.removeEventListener("wheel", handleWheel);
             el.removeEventListener("touchstart", handleTouchStart);
             el.removeEventListener("touchend", handleTouchEnd);
         };
-    }, [topIndex, scrolling]);
-
-    // Sync from outside selectedIndex
-    useEffect(() => {
-        if (selectedIndex !== topIndex) {
-            scrollStep(selectedIndex - topIndex);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedIndex]);
+    }, [topIndex, scrolling, items]);
 
     const getOpacity = (position) => {
         if (position === 0) return 1;
@@ -101,7 +125,7 @@ export default function StepScroller({ items, selectedIndex, onItemSelect, onIte
         <div
             ref={containerRef}
             className="overflow-hidden h-60 cursor-pointer rounded-lg px-[5%]"
-            style={{ scrollBehavior: "smooth" }}
+            style={{ scrollBehavior: "smooth", touchAction: "none" }}
         >
             {items.map((item, idx) => {
                 const position = (idx - topIndex + items.length) % items.length;
@@ -122,8 +146,9 @@ export default function StepScroller({ items, selectedIndex, onItemSelect, onIte
                             textOverflow: "ellipsis",
                             opacity,
                             height: ITEM_HEIGHT - 2,
+                            transition: "opacity 0.15s",
                         }}
-                        onClick={() => onItemClick(item)}
+                        onClick={() => onItemClick && onItemClick(item)}
                     >
             <span className="overflow-hidden text-ellipsis">
               {item.name} / {item.set_name}

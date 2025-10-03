@@ -255,8 +255,7 @@ export default function App() {
                 <Route path="/" element={<Home/>}/>
                 <Route path="/landing2" element={<Screen2/>}/>
                 <Route path="/landing3" element={<Screen3/>}/>
-                <Route path="/map" element={<MapScreen/>}/>
-                <Route path="/map/:id" element={<MapScreen/>}/>
+                <Route path="/map/:id?" element={<MapScreen/>}/>
             </Routes>
         </div>
     );
