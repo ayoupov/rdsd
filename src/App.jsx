@@ -108,7 +108,7 @@ export default function App() {
 
         let top = "0px";
         if (screenIndex === 0) {
-            top = `${window.innerHeight * 0.9 - imgHeightRef.current}px`;
+            top = `${window.innerHeight * 0.95 - imgHeightRef.current}px`;
         } else if (screenIndex === 1 || screenIndex === 2) {
             top = `${window.innerHeight * 0.15}px`;
         }
@@ -210,6 +210,7 @@ export default function App() {
                     ...imgStyle,
                     width: "80%",
                     maxWidth: "360px",
+                    pointerEvents: "none",
                 }}
                 onLoad={handleImageLoad}
             />
