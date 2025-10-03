@@ -1,6 +1,6 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, {useRef, useState, useEffect, useLayoutEffect} from "react";
 
-export default function StepScroller({ items, selectedIndex = 0, onItemSelect, onItemClick }) {
+export default function StepScroller({ items, selectedIndex, onItemSelect, onItemClick }) {
     const containerRef = useRef(null);
     const [topIndex, setTopIndex] = useState(selectedIndex);
     const [scrolling, setScrolling] = useState(false);
@@ -8,6 +8,26 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
     const ITEM_HEIGHT = 50;
 
     const touchStartY = useRef(0);
+
+    const isMountedRef = useRef(false);
+
+    // and now i hanged chatgpt, alas
+
+    // --- Immediately set scroll position on first mount (no animation) ---
+    useLayoutEffect(() => {
+        if (!isMountedRef.current) { // that fixes run once
+            console.log(selectedIndex);
+            const idx = ((selectedIndex % items.length) + items.length) % items.length;
+            setTopIndex(idx);
+            if (containerRef.current) {
+                // set instant position before paint to avoid flicker
+                containerRef.current.scrollTop = idx * ITEM_HEIGHT;
+            }
+            isMountedRef.current = true;
+            // run only once
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+        }
+    }, []);
 
     const scrollStep = (delta) => {
         if (scrolling) return;
