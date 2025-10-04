@@ -16,7 +16,7 @@ export default function LogoHeader({ scrollY, scrollToHome }) {
         <div
             onClick={scrollToHome}
             className="fixed left-0 right-0 z-50 flex justify-center"
-            style={{ top: `${top}px`, pointerEvents: "none", }}
+            style={{ top: `${top}px` }}
         >
             <img
                 src={process.env.PUBLIC_URL + "/img/logo-white.svg"}
