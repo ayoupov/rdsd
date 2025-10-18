@@ -17,11 +17,14 @@ export default function App() {
     const navigate = useNavigate();
     const location = useLocation();
     const [scrollY, setScrollY] = useState(0);
+    const [screen2Opacity, setScreen2Opacity] = useState(1);
+    const [screen3Opacity, setScreen3Opacity] = useState(1);
 
     const programmaticScrollRef = useRef(false);
     const scrollDebounceRef = useRef(null);
     const lastMapPathRef = useRef("/map");
     const isFirstLoadRef = useRef(true);
+    const imageRef = useRef(null);
 
     // Screens
     const screens = useMemo(
@@ -156,11 +159,38 @@ export default function App() {
                 }
             }, 120);
 
+            const computeOpacityOverlap = (textEl, imageRect) => {
+                if (!textEl || !imageRect) return 1;
+                const textRect = textEl.getBoundingClientRect();
+                const overlap = imageRect.bottom - textRect.top;
+
+                if (overlap <= 0) return 1;         // text below image
+                if (overlap >= textRect.height) return 0; // fully hidden
+                return 1 - overlap / textRect.height;     // partial fade
+            };
+
+
             if (rafId) cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(() => {
-                updateImageStyle(el.scrollTop, el.clientHeight, location.pathname);
-                setScrollY(el.scrollTop);
+                const scrollTop = el.scrollTop;
+                const screenHeight = el.clientHeight;
+
+                // Update the UNPP image position
+                updateImageStyle(scrollTop, screenHeight, location.pathname);
+                setScrollY(scrollTop);
+
+                // Get image DOMRect
+                const imageRect = imageRef.current?.getBoundingClientRect();
+
+                // Helper to get text element of each screen
+                const getTextElement = (screenIdx) =>
+                    el.children[screenIdx]?.querySelector('[data-screen-text]');
+
+                // Fade text based on overlap with image
+                setScreen2Opacity(computeOpacityOverlap(getTextElement(1), imageRect));
+                setScreen3Opacity(computeOpacityOverlap(getTextElement(2), imageRect));
             });
+
         };
 
         // Run once
@@ -215,6 +245,7 @@ export default function App() {
                     pointerEvents: "none",
                 }}
                 onLoad={handleImageLoad}
+                ref={imageRef}
             />
 
             {/* Burger menu */}
@@ -257,7 +288,13 @@ export default function App() {
                         key={idx}
                         className="scroll-screen h-screen w-screen snap-start flex justify-center items-center"
                     >
-                        {screen.component}
+                        {screen.name === "Screen2" ? (
+                            <Screen2 opacity={screen2Opacity} />
+                        ) : screen.name === "Screen3" ? (
+                            <Screen3 opacity={screen3Opacity} />
+                        ) : (
+                            screen.component
+                        )}
                     </div>
                 ))}
             </div>
