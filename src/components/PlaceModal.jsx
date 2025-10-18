@@ -62,7 +62,7 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
                                 />
                             )}
 
-                            <table className="w-full text-left mb-4 text-[#6A6A6A]">
+                            <table className="w-full text-left mb-4 text-[#6A6A6A] text-[18px]">
                                 <tbody>
                                 <tr className="border-t border-b border-[#CDCDCD]">
                                     <td>Construction: {selectedPlace.construction_years || "N/A"}</td>
@@ -77,7 +77,7 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
                             </table>
 
                             {selectedPlace.description?.split("\\n").map((line, idx) => (
-                                <p className="mb-4" key={idx}>{line}</p>
+                                <p className="mb-4 text-[18px]" key={idx}>{line}</p>
                             ))}
                         </div>
                     )}
@@ -93,7 +93,7 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
                                 />
                             )}
 
-                            <table className="w-full text-left mb-4 text-[#6A6A6A]">
+                            <table className="w-full text-left mb-4 text-[#6A6A6A] text-[18px]">
                                 <tbody>
                                 <tr className="border-t border-b border-[#CDCDCD]">
                                     <td>Est.: {selectedPlace.set_est || "N/A"}</td>
@@ -108,7 +108,7 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
                             </table>
 
                             {selectedPlace.set_description?.split("\\n").map((line, idx) => (
-                                <p className="mb-4" key={idx}>{line}</p>
+                                <p className="mb-4 text-[18px]" key={idx}>{line}</p>
                             ))}
                         </div>
                     )}
