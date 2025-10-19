@@ -128,7 +128,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
     return (
         <div
             ref={containerRef}
-            className="overflow-hidden h-[210px] cursor-pointer rounded-sm px-4"
+            className="overflow-hidden h-[208px] cursor-pointer rounded-sm px-4"
             style={{ scrollBehavior: "smooth", touchAction: "none" }}
         >
             {items.map((item, idx) => {
