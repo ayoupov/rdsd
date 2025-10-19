@@ -243,7 +243,7 @@ export default function App() {
                 className="fixed h-auto left-1/2 -translate-x-1/2 z-10"
                 style={{
                     ...imgStyle,
-                    transition: programmaticScrollRef.current ? "top 0.3s, opacity 0.3s" : "none",
+                    transition: programmaticScrollRef.current ? "top 0.2s, opacity 0.2s" : "none",
                     width: "100%",
                     paddingLeft: "16px",
                     paddingRight: "16px",
