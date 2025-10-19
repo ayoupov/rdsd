@@ -12,7 +12,6 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
     const [topIndex, setTopIndex] = useState(() => normalizeIndex(selectedIndex));
     const [scrolling, setScrolling] = useState(false);
 
-    // Gesture locks
     const gestureActive = useRef(false);
     const wheelTimeout = useRef(null);
     const touchTimeout = useRef(null);
@@ -24,7 +23,6 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         if (!items || items.length === 0) return;
 
         const newIndex = normalizeIndex(topIndex + delta);
-        console.log(`[Scroll Step] From ${topIndex} → ${newIndex}, delta=${delta}`);
         setTopIndex(newIndex);
         setScrolling(true);
 
@@ -35,12 +33,11 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         }
 
         setTimeout(() => {
-            console.log(`[Scroll Step] Animation finished, topIndex=${newIndex}`);
             setScrolling(false);
         }, ANIM_MS);
     };
 
-    // ---- wheel handling: immediate first step + debounce rest
+    // ---- wheel handling
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
@@ -49,23 +46,17 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
             e.preventDefault();
             const now = performance.now();
 
-            // Ignore events that occurred before the last unlock
-            if (now < lastGestureTime.current) {
-                console.log("[Wheel] Ignoring queued old event");
-                return;
-            }
+            if (now < lastGestureTime.current) return;
 
             if (!gestureActive.current) {
                 gestureActive.current = true;
                 scrollStep(e.deltaY > 0 ? 1 : -1);
             }
 
-            // Reset the unlock timer
             if (wheelTimeout.current) clearTimeout(wheelTimeout.current);
             wheelTimeout.current = setTimeout(() => {
                 gestureActive.current = false;
-                lastGestureTime.current = performance.now(); // update unlock timestamp
-                console.log("[Wheel] Gesture unlocked");
+                lastGestureTime.current = performance.now();
             }, 100);
         };
 
@@ -73,7 +64,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         return () => el.removeEventListener("wheel", handleWheel);
     }, [topIndex, items]);
 
-    // ---- touch handling: swipe
+    // ---- touch handling
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
@@ -85,19 +76,14 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         const handleTouchEnd = (e) => {
             if (touchStartY.current == null) return;
             const delta = e.changedTouches[0].clientY - touchStartY.current;
-            const now = performance.now();
-
-            console.log(`[Touch] start=${touchStartY.current}, end=${e.changedTouches[0].clientY}, delta=${delta}, topIndex=${topIndex}, gestureActive=${gestureActive.current}, time=${now}`);
 
             if (Math.abs(delta) > 20 && !gestureActive.current) {
-                console.log(`[Touch] Swipe detected → scroll`);
                 gestureActive.current = true;
                 scrollStep(delta < 0 ? 1 : -1);
             }
 
             if (touchTimeout.current) clearTimeout(touchTimeout.current);
             touchTimeout.current = setTimeout(() => {
-                console.log(`[Touch] Gesture unlocked`);
                 gestureActive.current = false;
             }, 100);
 
