@@ -3,7 +3,7 @@ import React from "react";
 export default function StepScrollerItem({ item, opacity, height, onClick }) {
     return (
         <button
-            className="w-full my-1 px-3 py-3 text-left rounded-lg flex justify-between items-center"
+            className="w-full my-[6px] px-[16px] py-[10px] text-left rounded-lg flex justify-between items-center"
             style={{
                 backgroundColor: "transparent",
                 color: "#FFFFFF",
@@ -14,7 +14,7 @@ export default function StepScrollerItem({ item, opacity, height, onClick }) {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 opacity,
-                height: height - 2,
+                // height: height,
                 transition: "opacity 0.15s",
             }}
             onClick={() => onClick && onClick(item)}

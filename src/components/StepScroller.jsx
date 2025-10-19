@@ -5,7 +5,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
     const containerRef = useRef(null);
     const isMountedRef = useRef(false);
 
-    const ITEM_HEIGHT = 44;
+    const ITEM_HEIGHT = 52; // 46 + 6 margin
     const ANIM_MS = 200;
 
     const normalizeIndex = (idx) => ((idx % items.length) + items.length) % items.length;
@@ -27,6 +27,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         setScrolling(true);
 
         if (onItemSelect) onItemSelect(items[newIndex]);
+        console.log({ top: newIndex * ITEM_HEIGHT});
 
         if (containerRef.current) {
             containerRef.current.scrollTo({ top: newIndex * ITEM_HEIGHT, behavior: "smooth" });
@@ -127,7 +128,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
     return (
         <div
             ref={containerRef}
-            className="overflow-hidden h-60 cursor-pointer rounded-sm px-4"
+            className="overflow-hidden h-[210px] cursor-pointer rounded-sm px-4"
             style={{ scrollBehavior: "smooth", touchAction: "none" }}
         >
             {items.map((item, idx) => {
