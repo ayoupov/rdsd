@@ -49,18 +49,21 @@ export default function OverlayMenu({closeMenu, openAbout, openSupport}) {
                 ))}
             </div>
 
-            {/* Full-width black logo at the bottom */}
+            {/* Full-width black logo at the bottom
+            // const initialWidth = 358;
+            // const initialHeight = 173;
+            */}
             <div className="w-full p-4 flex justify-center">
                 <img
                     src={process.env.PUBLIC_URL + "/img/logo-black.svg"}
                     alt="Logo"
-                    className="w-full max-w-[300px] object-contain"
+                    className="w-full max-w-[358px] object-contain"
                 />
             </div>
 
             {/* Close button */}
             <button
-                className="absolute top-4 right-4 text-black p-2"
+                className="absolute top-6 right-4 text-black p-2"
                 onClick={() => closeMenu()}
             >
                 <svg

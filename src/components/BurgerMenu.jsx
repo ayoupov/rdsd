@@ -5,7 +5,7 @@ export default function BurgerMenu({show, onClick}) {
 
     return (
         <button
-            className="fixed top-[16px] right-4 z-50 p-2 rounded-md focus:outline-none"
+            className="fixed top-[22px] right-4 z-50 p-2 rounded-md focus:outline-none"
             style={{backgroundColor: "rgba(0,0,0,0)"}}
             onClick={onClick}
         >
