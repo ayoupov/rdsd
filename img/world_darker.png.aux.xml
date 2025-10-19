@@ -1,0 +1,80 @@
+<PAMDataset>
+  <Metadata>
+    <MDI key="TIFFTAG_DATETIME">2025:10:09 09:27:42</MDI>
+    <MDI key="TIFFTAG_RESOLUTIONUNIT">2 (pixels/inch)</MDI>
+    <MDI key="TIFFTAG_SOFTWARE">Adobe Photoshop 26.11 (Macintosh)</MDI>
+    <MDI key="TIFFTAG_XRESOLUTION">72</MDI>
+    <MDI key="TIFFTAG_YRESOLUTION">72</MDI>
+  </Metadata>
+  <Metadata domain="IMAGE_STRUCTURE">
+    <MDI key="INTERLEAVE">PIXEL</MDI>
+  </Metadata>
+  <Metadata domain="xml:XMP" format="xml">
+    <?xpacket begin="&#xFEFF;" id="W5M0MpCehiHzreSzNTczkc9d"?>
+    <x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 9.1-c003 79.9690a87fc, 2025/03/06-20:50:16        ">
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        <rdf:Description rdf:about="" xmlns:xmp="http://ns.adobe.com/xap/1.0/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:photoshop="http://ns.adobe.com/photoshop/1.0/" xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/" xmlns:stEvt="http://ns.adobe.com/xap/1.0/sType/ResourceEvent#" xmlns:tiff="http://ns.adobe.com/tiff/1.0/" xmlns:exif="http://ns.adobe.com/exif/1.0/">
+          <xmp:CreatorTool>Adobe Photoshop 26.10 (Macintosh)</xmp:CreatorTool>
+          <xmp:CreateDate>2025-09-12T04:35:23+01:00</xmp:CreateDate>
+          <xmp:ModifyDate>2025-10-09T09:27:42+07:00</xmp:ModifyDate>
+          <xmp:MetadataDate>2025-10-09T09:27:42+07:00</xmp:MetadataDate>
+          <dc:format>image/tiff</dc:format>
+          <photoshop:ColorMode>3</photoshop:ColorMode>
+          <xmpMM:InstanceID>xmp.iid:f8d088dc-a496-401f-a90e-558f8362ce0d</xmpMM:InstanceID>
+          <xmpMM:DocumentID>adobe:docid:photoshop:325e6ce2-7c73-124b-af9b-3219c9b2a039</xmpMM:DocumentID>
+          <xmpMM:OriginalDocumentID>xmp.did:66b5102e-78f8-4a2b-8093-e896f0ecaac1</xmpMM:OriginalDocumentID>
+          <xmpMM:History>
+            <rdf:Seq>
+              <rdf:li rdf:parseType="Resource">
+                <stEvt:action>created</stEvt:action>
+                <stEvt:instanceID>xmp.iid:66b5102e-78f8-4a2b-8093-e896f0ecaac1</stEvt:instanceID>
+                <stEvt:when>2025-09-12T04:35:23+01:00</stEvt:when>
+                <stEvt:softwareAgent>Adobe Photoshop 26.10 (Macintosh)</stEvt:softwareAgent>
+              </rdf:li>
+              <rdf:li rdf:parseType="Resource">
+                <stEvt:action>converted</stEvt:action>
+                <stEvt:parameters>from image/png to image/tiff</stEvt:parameters>
+              </rdf:li>
+              <rdf:li rdf:parseType="Resource">
+                <stEvt:action>saved</stEvt:action>
+                <stEvt:instanceID>xmp.iid:9f1aa8b5-884c-4834-91ff-13d9dc68e8b4</stEvt:instanceID>
+                <stEvt:when>2025-09-24T09:23:02+01:00</stEvt:when>
+                <stEvt:softwareAgent>Adobe Photoshop 26.10 (Macintosh)</stEvt:softwareAgent>
+                <stEvt:changed>/</stEvt:changed>
+              </rdf:li>
+              <rdf:li rdf:parseType="Resource">
+                <stEvt:action>saved</stEvt:action>
+                <stEvt:instanceID>xmp.iid:f8d088dc-a496-401f-a90e-558f8362ce0d</stEvt:instanceID>
+                <stEvt:when>2025-10-09T09:27:42+07:00</stEvt:when>
+                <stEvt:softwareAgent>Adobe Photoshop 26.11 (Macintosh)</stEvt:softwareAgent>
+                <stEvt:changed>/</stEvt:changed>
+              </rdf:li>
+            </rdf:Seq>
+          </xmpMM:History>
+          <tiff:ImageWidth>4453</tiff:ImageWidth>
+          <tiff:ImageLength>2945</tiff:ImageLength>
+          <tiff:BitsPerSample>
+            <rdf:Seq>
+              <rdf:li>8</rdf:li>
+              <rdf:li>8</rdf:li>
+              <rdf:li>8</rdf:li>
+              <rdf:li>8</rdf:li>
+            </rdf:Seq>
+          </tiff:BitsPerSample>
+          <tiff:Compression>1</tiff:Compression>
+          <tiff:PhotometricInterpretation>2</tiff:PhotometricInterpretation>
+          <tiff:Orientation>1</tiff:Orientation>
+          <tiff:SamplesPerPixel>4</tiff:SamplesPerPixel>
+          <tiff:PlanarConfiguration>1</tiff:PlanarConfiguration>
+          <tiff:XResolution>720000/10000</tiff:XResolution>
+          <tiff:YResolution>720000/10000</tiff:YResolution>
+          <tiff:ResolutionUnit>2</tiff:ResolutionUnit>
+          <exif:ColorSpace>65535</exif:ColorSpace>
+          <exif:PixelXDimension>4453</exif:PixelXDimension>
+          <exif:PixelYDimension>2945</exif:PixelYDimension>
+        </rdf:Description>
+      </rdf:RDF>
+    </x:xmpmeta>
+    <?xpacket end="w"?>
+  </Metadata>
+</PAMDataset>
