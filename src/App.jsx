@@ -131,70 +131,67 @@ export default function App() {
     };
 
     // Scroll listener
+// Scroll listener with smooth image and debounced route
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
 
         let rafId = null;
+
+        const computeOpacityOverlap = (textEl, imageRect) => {
+            if (!textEl || !imageRect) return 1;
+            const textRect = textEl.getBoundingClientRect();
+            const overlap = imageRect.bottom - textRect.top;
+
+            if (overlap <= 0) return 1;             // text below image
+            if (overlap >= textRect.height) return 0; // fully hidden
+            return 1 - overlap / textRect.height;     // partial fade
+        };
+
         const onScroll = () => {
-            if (programmaticScrollRef.current || isFirstLoadRef.current) return;
+            const scrollTop = el.scrollTop;
+            const screenHeight = el.clientHeight;
+
+            // 1️⃣ Immediate image update
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                updateImageStyle(scrollTop, screenHeight, location.pathname);
+                setScrollY(scrollTop);
+
+                // Fade text immediately
+                const imageRect = imageRef.current?.getBoundingClientRect();
+                const getTextElement = (idx) => el.children[idx]?.querySelector('[data-screen-text]');
+                setScreen2Opacity(computeOpacityOverlap(getTextElement(1), imageRect));
+                setScreen3Opacity(computeOpacityOverlap(getTextElement(2), imageRect));
+            });
+
+            // 2️⃣ Debounced route sync
             if (scrollDebounceRef.current) clearTimeout(scrollDebounceRef.current);
             scrollDebounceRef.current = setTimeout(() => {
-                const scrollPos = el.scrollTop;
                 const children = Array.from(el.children);
                 let closestIdx = 0;
                 let closestDist = Infinity;
+
                 children.forEach((child, idx) => {
-                    const dist = Math.abs(child.offsetTop - scrollPos);
+                    const dist = Math.abs(child.offsetTop - scrollTop);
                     if (dist < closestDist) {
                         closestDist = dist;
                         closestIdx = idx;
                     }
                 });
+
                 let targetPath = screens[closestIdx].path;
                 if (targetPath === "/map") targetPath = lastMapPathRef.current;
+
                 if (location.pathname !== targetPath) {
                     programmaticScrollRef.current = true;
                     navigate(targetPath, {replace: true});
                     setTimeout(() => (programmaticScrollRef.current = false), 600);
                 }
             }, 120);
-
-            const computeOpacityOverlap = (textEl, imageRect) => {
-                if (!textEl || !imageRect) return 1;
-                const textRect = textEl.getBoundingClientRect();
-                const overlap = imageRect.bottom - textRect.top;
-
-                if (overlap <= 0) return 1;         // text below image
-                if (overlap >= textRect.height) return 0; // fully hidden
-                return 1 - overlap / textRect.height;     // partial fade
-            };
-
-
-            if (rafId) cancelAnimationFrame(rafId);
-            rafId = requestAnimationFrame(() => {
-                const scrollTop = el.scrollTop;
-                const screenHeight = el.clientHeight;
-
-                // Update the UNPP image position
-                updateImageStyle(scrollTop, screenHeight, location.pathname);
-                setScrollY(scrollTop);
-
-                // Get image DOMRect
-                const imageRect = imageRef.current?.getBoundingClientRect();
-
-                // Helper to get text element of each screen
-                const getTextElement = (screenIdx) =>
-                    el.children[screenIdx]?.querySelector('[data-screen-text]');
-
-                // Fade text based on overlap with image
-                setScreen2Opacity(computeOpacityOverlap(getTextElement(1), imageRect));
-                setScreen3Opacity(computeOpacityOverlap(getTextElement(2), imageRect));
-            });
-
         };
 
-        // Run once
+        // Run once to set initial image position
         updateImageStyle(el.scrollTop, el.clientHeight, location.pathname);
 
         el.addEventListener("scroll", onScroll, {passive: true});
@@ -250,17 +247,6 @@ export default function App() {
             />
 
             {/* Burger menu */}
-            {/*{showBurger && (*/}
-            {/*    <button*/}
-            {/*        className="fixed top-[16px] right-4 z-50 p-2 rounded-md focus:outline-none"*/}
-            {/*        style={{backgroundColor: "rgba(0,0,0,0)"}}*/}
-            {/*        onClick={() => setMenuOpen(true)}*/}
-            {/*    >*/}
-            {/*        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
-            {/*            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>*/}
-            {/*        </svg>*/}
-            {/*    </button>*/}
-            {/*)}*/}
             <BurgerMenu show={showBurger} onClick={() => setMenuOpen(true)}/>
 
             {/* Overlay menu + modals */}
