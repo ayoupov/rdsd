@@ -41,7 +41,6 @@ export default function App() {
     // UNPP image state
     const imgHeightRef = useRef(0);
     const [imgStyle, setImgStyle] = useState({top: "0px", opacity: 1});
-    const [imgReady, setImgReady] = useState(false);
 
     // Track last map subroute
     useEffect(() => {
@@ -225,7 +224,6 @@ export default function App() {
     const handleImageLoad = (e) => {
         imgHeightRef.current = e.target.offsetHeight;
         updateImageStyle(containerRef.current.scrollTop, containerRef.current.clientHeight, location.pathname);
-        setImgReady(true); // enable transitions only after first position
     };
 
     const currentScreen = Math.floor((scrollY + window.innerHeight / 2) / window.innerHeight);
