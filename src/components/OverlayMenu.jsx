@@ -4,6 +4,26 @@ import React from "react";
 export default function OverlayMenu({closeMenu, openAbout, openSupport}) {
     const links = ["About", "Support the project", "Instagram"];
 
+    const handleInstagramClick = () => {
+        const username = "lndwrks";
+        const appUrl = `instagram://user?username=${username}`;
+        const webUrl = `https://www.instagram.com/${username}`;
+
+        // Try to open the app first
+        const now = Date.now();
+        window.location.href = appUrl;
+
+        // If the app doesn't open (e.g., on desktop or no app installed),
+        // after ~800ms open the web page instead
+        setTimeout(() => {
+            if (Date.now() - now < 1500) {
+                window.open(webUrl, "_blank");
+            }
+        }, 800);
+
+        closeMenu();
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex flex-col justify-between bg-white">
 
@@ -17,6 +37,8 @@ export default function OverlayMenu({closeMenu, openAbout, openSupport}) {
                                 openAbout();
                             } else if (label === "Support the project") {
                                 openSupport();
+                            } else if (label === "Instagram") {
+                                handleInstagramClick();
                             } else {
                                 closeMenu();
                             }

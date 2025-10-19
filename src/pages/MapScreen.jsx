@@ -105,7 +105,7 @@ export default function MapScreen() {
         setTimeout(() => {
             setSelectedPlaceForModal(null);
             setIsClosing(false);
-        }, 400);
+        }, 300);
     };
 
     const mainBounds = [
@@ -127,10 +127,9 @@ export default function MapScreen() {
         <div className="w-full h-full relative">
             <MapContainer
                 center={[initialPlace.lat, initialPlace.lon]}
-                minZoom={5}
-                zoom={5}
-                maxZoom={5}
-                scrollWheelZoom={false}
+                minZoom={3}
+                zoom={3}
+                maxZoom={3}
                 style={{height: "100%", width: "100%", zIndex: 0, position: "absolute"}}
                 worldCopyJump={true}
                 maxBounds={mainBounds}
@@ -138,6 +137,10 @@ export default function MapScreen() {
                 className="bg-black"
                 zoomControl={false}
                 attributionControl={false}
+                scrollWheelZoom={false}
+                doubleClickZoom={false}
+                touchZoom={false}
+                boxZoom={false}
             >
                 {/*<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>*/}
                 <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds}/>
