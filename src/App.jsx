@@ -8,6 +8,7 @@ import LogoHeader from "./components/LogoHeader.jsx";
 import OverlayMenu from "./components/OverlayMenu.jsx";
 import AboutModal from "./components/AboutModal.jsx";
 import SupportModal from "./components/SupportModal.jsx";
+import BurgerMenu from "./components/BurgerMenu.jsx";
 
 export default function App() {
     const containerRef = useRef(null);
@@ -249,17 +250,18 @@ export default function App() {
             />
 
             {/* Burger menu */}
-            {showBurger && (
-                <button
-                    className="fixed top-[16px] right-4 z-50 p-2 rounded-md focus:outline-none"
-                    style={{backgroundColor: "rgba(0,0,0,0)"}}
-                    onClick={() => setMenuOpen(true)}
-                >
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-            )}
+            {/*{showBurger && (*/}
+            {/*    <button*/}
+            {/*        className="fixed top-[16px] right-4 z-50 p-2 rounded-md focus:outline-none"*/}
+            {/*        style={{backgroundColor: "rgba(0,0,0,0)"}}*/}
+            {/*        onClick={() => setMenuOpen(true)}*/}
+            {/*    >*/}
+            {/*        <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">*/}
+            {/*            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16"/>*/}
+            {/*        </svg>*/}
+            {/*    </button>*/}
+            {/*)}*/}
+            <BurgerMenu show={showBurger} onClick={() => setMenuOpen(true)}/>
 
             {/* Overlay menu + modals */}
             {menuOpen && (
