@@ -100,34 +100,42 @@ export default function App() {
 
     // Unified image style updater
     const updateImageStyle = (scrollTop, screenHeight, pathname) => {
-        let screenIndex = 0;
+        const homeTop = window.innerHeight * 0.95 - imgHeightRef.current;
+        const landingTop = window.innerHeight * 0.13;
+        const transitionRange = 200;
 
-        if (scrollTop === 0) {
-            if (pathname.startsWith("/map")) screenIndex = 3;
-            else if (pathname.startsWith("/landing2")) screenIndex = 1;
-            else if (pathname.startsWith("/landing3")) screenIndex = 2;
+        let startTop = homeTop;
+        let endTop = landingTop;
+        let progress = 0;
+
+        // Determine which screen we are closer to
+        if (scrollTop < screenHeight) {
+            startTop = homeTop;
+            endTop = landingTop;
+            progress = Math.min(scrollTop / transitionRange, 1);
+        } else if (scrollTop >= screenHeight && scrollTop < screenHeight * 2) {
+            // Screen2 → Screen3 (if needed, adjust accordingly)
+            startTop = landingTop;
+            endTop = landingTop; // same for now, no change
+            progress = 0;
         } else {
-            screenIndex = Math.floor((scrollTop + screenHeight / 2) / screenHeight);
+            startTop = landingTop;
+            endTop = landingTop;
+            progress = 0;
         }
 
-        let top = "0px";
-        if (screenIndex === 0) {
-            top = `${window.innerHeight * 0.95 - imgHeightRef.current}px`;
-        } else if (screenIndex === 1 || screenIndex === 2) {
-            top = `${window.innerHeight * 0.13}px`;
-        }
+        const top = startTop + (endTop - startTop) * progress;
 
+        // Keep your existing opacity logic
         let opacity = 1;
         const fadeStart = screenHeight * 2;
         const fadeEnd = screenHeight * 2.2;
         if (scrollTop > fadeStart) {
             opacity = scrollTop >= fadeEnd ? 0 : 1 - (scrollTop - fadeStart) / (fadeEnd - fadeStart);
         }
-        if (pathname.startsWith("/map")) {
-            opacity = 0;
-        }
+        if (pathname.startsWith("/map")) opacity = 0;
 
-        setImgStyle({top, opacity});
+        setImgStyle({ top: `${top}px`, opacity });
     };
 
     // Scroll listener
@@ -232,10 +240,10 @@ export default function App() {
                 id="fixed-unpp"
                 src={process.env.PUBLIC_URL + "/img/unpp.gif"}
                 alt="UNPP animation"
-                className={`fixed h-auto left-1/2 -translate-x-1/2 z-10
-                            ${imgReady ? "transition-all duration-300" : ""}`}
+                className="fixed h-auto left-1/2 -translate-x-1/2 z-10"
                 style={{
                     ...imgStyle,
+                    transition: programmaticScrollRef.current ? "top 0.3s, opacity 0.3s" : "none",
                     width: "100%",
                     paddingLeft: "16px",
                     paddingRight: "16px",
