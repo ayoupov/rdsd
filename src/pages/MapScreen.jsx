@@ -132,7 +132,7 @@ export default function MapScreen() {
                 maxZoom={3}
                 style={{height: "100%", width: "100%", zIndex: 0, position: "absolute"}}
                 worldCopyJump={true}
-                maxBounds={mainBounds}
+                // maxBounds={mainBounds}
                 maxBoundsViscosity={1.0}
                 className="bg-black"
                 zoomControl={false}
