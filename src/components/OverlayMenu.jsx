@@ -1,5 +1,6 @@
 // components/OverlayMenu.jsx
 import React from "react";
+import CloseButton from "./CloseButton";
 
 export default function OverlayMenu({closeMenu, openAbout, openSupport}) {
     const links = ["About", "Support the project", "Instagram"];
@@ -61,23 +62,10 @@ export default function OverlayMenu({closeMenu, openAbout, openSupport}) {
                 />
             </div>
 
+
             {/* Close button */}
-            <button
-                className="absolute top-6 right-4 text-black p-2"
-                onClick={() => closeMenu()}
-            >
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    fill="none"
-                    strokeWidth={2}
-                    className="w-5 h-5"
-                >
-                    <line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                    <line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
-            </button>
+            <CloseButton onClick={() => closeMenu()} color="black" />
+
         </div>
     );
 }
