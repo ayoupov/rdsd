@@ -9,11 +9,11 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
 
     return (
         <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start z-50 overflow-y-auto"
+            className={`relative w-full h-full z-50 overflow-y-auto ${isDesktop ? "" : "fixed inset-0 bg-black bg-opacity-50 flex justify-center items-start"}`}
             onClick={closeModal}
         >
             <div
-                className="bg-white w-full max-w-md min-h-screen rounded-none p-4 shadow-xl relative transition-transform transition-opacity duration-400 ease-out"
+                className={`bg-white w-full ${isDesktop ? "" : "max-w-md"} min-h-screen rounded-none p-4 shadow-xl relative transition-transform transition-opacity duration-400 ease-out`}
                 style={{
                     transform: isClosing ? "translateX(-100%)" : "translateX(0)",
                     opacity: isClosing ? 0 : 1,
