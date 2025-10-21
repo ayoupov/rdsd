@@ -70,7 +70,7 @@ export default function DesktopLayout({onSelectPlace}) {
                     <MapMarkers
                         places={places}
                         activeId={activePlace?.id}
-                        onMarkerClick={onSelectPlace}
+                        onMarkerClick={handleMarkerClick}
                     />
                     <FlyToLocation flyTo={flyTo}/>
                 </MapBase>
@@ -96,19 +96,36 @@ export default function DesktopLayout({onSelectPlace}) {
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-gray-700 mx-6 mb-2"/>
+                {/*<div className="border-t border-gray-700 mx-6 mb-2"/>*/}
 
                 {/* Scrollable list of places */}
-                <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
+                <div className="flex-1 flex flex-col justify-end overflow-y-auto px-[16px] pb-6 mv-[20px] custom-scrollbar">
                     {places.map((p) => (
                         <button
                             key={p.id}
                             onClick={() => onSelectPlace(p)}
-                            className={`block w-full text-left py-2 border-b border-gray-800 hover:text-white ${
-                                activePlace?.id === p.id ? "text-white font-semibold" : "text-gray-400"
-                            }`}
+                            className={`
+                        w-full px-[16px] my-[4px] text-left rounded-lg flex justify-between items-center hover:text-[#CDCDCD]
+                        ${activePlace?.id === p.id ? "text-[#CDCDCD]" : "text-[#6A6A6A]"}
+                        `}
+                            style={{
+                                backgroundColor: "transparent",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                // height: height,
+                                transition: "opacity 0.15s",
+                            }}
                         >
-                            {p.name.toUpperCase()} / {p.settlement}
+                          <span className="overflow-hidden text-ellipsis">
+                            {p.name} / {p.set_name}
+                          </span>
+                            <span className="ml-2" style={{display: "flex", alignItems: "center"}}>
+                            <svg width="9" height="14" viewBox="0 0 9 14" fill="none"
+                                 xmlns="http://www.w3.org/2000/svg">
+                              <path d="M0 0 L9 7 L0 14" stroke="white" strokeWidth="2"/>
+                            </svg>
+                          </span>
                         </button>
                     ))}
                 </div>
