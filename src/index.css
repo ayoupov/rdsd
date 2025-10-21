@@ -23,15 +23,24 @@ html, body, #root {
 }
 
 .scroll-screen {
-  height: 100vh;       /* full viewport height */
-  min-height: 100vh;   /* ensure minimum height even on desktop */
-  scroll-snap-align: start;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  height: calc(var(--vh) * 100);
+  min-height: calc(var(--vh) * 100);
 }
 
 body {
   @apply font-sans;
+}
+
+@supports (height: 100dvh) {
+  .h-screen {
+    height: 100dvh;
+  }
+}
+
+:root {
+  --vh: 1vh; /* fallback for browsers without visualViewport */
+}
+
+.h-screen {
+  height: calc(var(--vh) * 100) !important;
 }

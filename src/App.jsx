@@ -49,6 +49,25 @@ export default function App() {
         }
     }, [location.pathname]);
 
+    useEffect(() => {
+        const setVh = () => {
+            const vh = window.visualViewport
+                ? window.visualViewport.height * 0.01
+                : window.innerHeight * 0.01;
+            document.documentElement.style.setProperty("--vh", `${vh}px`);
+        };
+
+        setVh();
+        window.visualViewport?.addEventListener("resize", setVh);
+        window.addEventListener("resize", setVh);
+
+        return () => {
+            window.visualViewport?.removeEventListener("resize", setVh);
+            window.removeEventListener("resize", setVh);
+        };
+    }, []);
+
+
     // Programmatic scroll to screen
     const scrollToScreen = (index) => {
         if (!containerRef.current) return;
