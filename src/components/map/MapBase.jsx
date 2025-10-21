@@ -2,7 +2,7 @@ import React from "react";
 import { MapContainer } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
-export default function MapBase({ children, center, zoom = 3 }) {
+export default function MapBase({children, center, zoom = 3 }) {
     return (
         <MapContainer
             center={center}

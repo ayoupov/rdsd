@@ -1,82 +1,118 @@
-import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import MapScreen from "../pages/MapScreen";
-import Home from "../pages/Home";
-import Screen2 from "../pages/Screen2";
-import Screen3 from "../pages/Screen3";
-import LogoHeader from "../components/LogoHeader";
-import OverlayMenu from "../components/OverlayMenu";
-import AboutModal from "../components/AboutModal";
-import SupportModal from "../components/SupportModal";
-import BurgerMenu from "../components/BurgerMenu";
+import React, {useEffect, useState} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
+import MapBase from "../components/map/MapBase";
+import MapWorldOverlay from "../components/map/MapWorldOverlay";
+import MapMarkers from "../components/map/MapMarkers";
+import FlyToLocation from "../components/map/FlyToLocation";
+import {places} from "../places";
 
-export default function DesktopLayout() {
-    const navigate = useNavigate();
+
+export default function DesktopLayout({onSelectPlace}) {
     const location = useLocation();
+    const navigate = useNavigate();
 
-    const [menuOpen, setMenuOpen] = React.useState(false);
-    const [aboutOpen, setAboutOpen] = React.useState(false);
-    const [supportOpen, setSupportOpen] = React.useState(false);
+    const [id, setId] = useState(places[0].id);
+    const [activePlace, setActivePlace] = useState(places[0]);
+    const [flyTo, setFlyTo] = useState([places[0].lat, places[0].lon]);
+    const [selectedPlaceForModal, setSelectedPlaceForModal] = useState(null);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+    const [activeTab, setActiveTab] = useState("unpp");
+    const [isClosing, setIsClosing] = useState(false);
 
-    // Define sections for desktop (side-by-side layout)
-    const sections = [
-        { name: "Home", path: "/", component: <Home /> },
-        { name: "Screen2", path: "/landing2", component: <Screen2 /> },
-        { name: "Screen3", path: "/landing3", component: <Screen3 /> },
-        { name: "MapScreen", path: "/map", component: <MapScreen /> },
-    ];
+    useEffect(() => {
+        const parts = location.pathname.split("/");
+        if (parts[1] === "map" && parts[2]) {
+            const found = places.find((p) => p.id === parts[2]);
+            if (found) {
+                setId(found.id);
+                setActivePlace(found);
+                setFlyTo([found.lat, found.lon]);
+                setSelectedIndex(places.findIndex((p) => p.id === found.id));
+            }
+        }
+    }, [location]);
+
+    const handleItemSelect = (place) => {
+        setActivePlace(place);
+        setFlyTo([place.lat, place.lon]);
+        setSelectedIndex(places.findIndex((p) => p.id === place.id));
+        navigate(`/map/${place.id}`);
+    };
+
+    const handleItemClick = (place) => {
+        setSelectedPlaceForModal(place);
+        setActiveTab("unpp");
+        setIsClosing(false);
+        navigate(`/map/${place.id}`);
+    };
+
+    const handleMarkerClick = (place) => {
+        const index = places.findIndex((p) => p.id === place.id);
+        setSelectedIndex(index);
+        setActivePlace(place);
+        navigate(`/map/${place.id}`);
+    };
+
+    const closeModal = () => {
+        setIsClosing(true);
+        setTimeout(() => {
+            setSelectedPlaceForModal(null);
+            setIsClosing(false);
+        }, 300);
+    };
 
     return (
-        <div className="relative flex flex-col min-h-screen bg-white">
-            {/* Header */}
-            <LogoHeader
-                scrollY={0}
-                scrollToHome={() => navigate("/")}
-            />
-
-            {/* Burger for desktop menu */}
-            <BurgerMenu show={true} onClick={() => setMenuOpen(true)} />
-
-            {/* Overlay menu + modals */}
-            {menuOpen && (
-                <OverlayMenu
-                    closeMenu={() => setMenuOpen(false)}
-                    openAbout={() => {
-                        setMenuOpen(false);
-                        setAboutOpen(true);
-                    }}
-                    openSupport={() => {
-                        setMenuOpen(false);
-                        setSupportOpen(true);
-                    }}
-                />
-            )}
-            {aboutOpen && <AboutModal closeModal={() => setAboutOpen(false)} />}
-            {supportOpen && <SupportModal closeModal={() => setSupportOpen(false)} />}
-
-            {/* Main layout */}
-            <main className="flex flex-row flex-1 overflow-hidden">
-                {/* Left side: static image or hero content */}
-                <div className="w-1/2 h-full flex justify-center items-center bg-gray-50">
-                    <img
-                        src={process.env.PUBLIC_URL + "/img/unpp.gif"}
-                        alt="UNPP animation"
-                        className="max-w-[480px] w-full object-contain"
+        <div className="flex h-screen w-screen bg-black text-white overflow-hidden">
+            {/* Left: Map */}
+            <div className="flex-1 relative">
+                <MapBase center={[activePlace.lat, activePlace.lon]}>
+                    <MapWorldOverlay/>
+                    <MapMarkers
+                        places={places}
+                        activeId={activePlace?.id}
+                        onMarkerClick={onSelectPlace}
                     />
+                    <FlyToLocation flyTo={flyTo}/>
+                </MapBase>
+            </div>
+
+            {/* Right: Info panel */}
+            <div className="w-[35%] min-w-[420px] bg-black text-white flex flex-col border-l border-gray-800">
+                <div className="flex justify-between items-start p-6">
+                    <div>
+                        <div className="text-5xl font-bold leading-none tracking-tight">
+                            ROADSIDE<br/>PICNIC
+                        </div>
+                        <p className="mt-3 text-sm text-gray-300 w-64">
+                            A remote detour around Unfinished Nuclear Power Plants and their settlements
+                        </p>
+                    </div>
+
+                    <div className="flex flex-col items-end space-y-1 text-sm">
+                        <button className="hover:text-gray-400">About</button>
+                        <button className="hover:text-gray-400">Support the project</button>
+                        <button className="hover:text-gray-400">INST</button>
+                    </div>
                 </div>
 
-                {/* Right side: scrollable content */}
-                <div className="w-1/2 h-screen overflow-y-auto">
-                    {sections.map((section, idx) => (
-                        <div
-                            key={idx}
-                            className="min-h-screen flex justify-center items-center border-b border-gray-100"
+                {/* Divider */}
+                <div className="border-t border-gray-700 mx-6 mb-2"/>
+
+                {/* Scrollable list of places */}
+                <div className="flex-1 overflow-y-auto px-6 pb-6 custom-scrollbar">
+                    {places.map((p) => (
+                        <button
+                            key={p.id}
+                            onClick={() => onSelectPlace(p)}
+                            className={`block w-full text-left py-2 border-b border-gray-800 hover:text-white ${
+                                activePlace?.id === p.id ? "text-white font-semibold" : "text-gray-400"
+                            }`}
                         >
-                            {section.component}
-                        </div>
+                            {p.name.toUpperCase()} / {p.settlement}
+                        </button>
                     ))}
                 </div>
-            </main>
+            </div>
         </div>
     );
 }
