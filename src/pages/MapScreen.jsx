@@ -1,80 +1,40 @@
-import React, {useEffect, useState} from "react";
-import {ImageOverlay, MapContainer, Marker, useMap} from "react-leaflet";
-import "leaflet/dist/leaflet.css";
-import L from "leaflet";
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { places } from "../places";
+
+import MapBase from "../components/map/MapBase";
+import MapWorldOverlay from "../components/map/MapWorldOverlay";
+import MapMarkers from "../components/map/MapMarkers";
+import FlyToLocation from "../components/map/FlyToLocation";
+
 import StepScroller from "../components/StepScroller";
 import PlaceModal from "../components/PlaceModal";
-import {useLocation, useNavigate} from "react-router-dom";
-import {places} from "../places";
-
-// Default bounds and latScale
-const DEFAULT = {west: -180, east: 180, south: -65, north: 90, latScale: 0.918};
-
-// Leaflet icons
-const defaultIcon = new L.Icon({
-    iconUrl: process.env.PUBLIC_URL + "/img/default-pin-shadow.png",
-    iconAnchor: [21, 21],
-    popupAnchor: [0, -21],
-    iconSize: [42, 42],
-});
-
-const selectedIcon = new L.Icon({
-    iconUrl: process.env.PUBLIC_URL + "/img/active-pin-shadow.png",
-    iconAnchor: [21, 21],
-    popupAnchor: [0, -21],
-    iconSize: [42, 42],
-});
-
-// Helper to apply fixed lat scaling
-const applyLatScale = (lat) => {
-    const center = (DEFAULT.south + DEFAULT.north) / 2;
-    return center + (lat - center) * DEFAULT.latScale;
-};
-
-// FlyTo component
-function FlyToLocation({flyTo}) {
-    const map = useMap();
-    useEffect(() => {
-        if (flyTo?.length === 2) map.flyTo(flyTo, 4);
-    }, [flyTo, map]);
-    return null;
-}
 
 export default function MapScreen() {
     const location = useLocation();
     const navigate = useNavigate();
+
     const [id, setId] = useState(places[0].id);
-
-    useEffect(() => {
-        const parts = location.pathname.split("/");
-        if (parts[1] === "map" && parts[2] && places.find((p) => p.id === parts[2])) {
-            setId(parts[2]);
-        }
-    }, [location]);
-
-    const initialPlace = places.find((p) => p.id === id);
-
-    const [activePlace, setActivePlace] = useState(places.findIndex((p) => p.id === id));
-    const [flyTo, setFlyTo] = useState([initialPlace.lat, initialPlace.lon]);
-    const [selectedIndex, setSelectedIndex] = useState(
-        places.findIndex((p) => p.id === id)
-    );
-
+    const [activePlace, setActivePlace] = useState(places[0]);
+    const [flyTo, setFlyTo] = useState([places[0].lat, places[0].lon]);
     const [selectedPlaceForModal, setSelectedPlaceForModal] = useState(null);
+    const [selectedIndex, setSelectedIndex] = useState(0);
     const [activeTab, setActiveTab] = useState("unpp");
     const [isClosing, setIsClosing] = useState(false);
 
-    // Sync active place when route param changes
     useEffect(() => {
-        const newPlace = places.find((p) => p.id === id);
-        if (newPlace) {
-            setActivePlace(newPlace);
-            setFlyTo([newPlace.lat, newPlace.lon]);
-            setSelectedIndex(places.findIndex((p) => p.id === id));
+        const parts = location.pathname.split("/");
+        if (parts[1] === "map" && parts[2]) {
+            const found = places.find((p) => p.id === parts[2]);
+            if (found) {
+                setId(found.id);
+                setActivePlace(found);
+                setFlyTo([found.lat, found.lon]);
+                setSelectedIndex(places.findIndex((p) => p.id === found.id));
+            }
         }
-    }, [id]);
+    }, [location]);
 
-    // Handle selecting an item from scroller (highlight marker)
     const handleItemSelect = (place) => {
         setActivePlace(place);
         setFlyTo([place.lat, place.lon]);
@@ -82,7 +42,6 @@ export default function MapScreen() {
         navigate(`/map/${place.id}`);
     };
 
-    // Handle clicking a scroller item (open popup)
     const handleItemClick = (place) => {
         setSelectedPlaceForModal(place);
         setActiveTab("unpp");
@@ -90,10 +49,9 @@ export default function MapScreen() {
         navigate(`/map/${place.id}`);
     };
 
-    // Handle marker click (scroll scroller)
     const handleMarkerClick = (place) => {
         const index = places.findIndex((p) => p.id === place.id);
-        setSelectedIndex(index); // StepScroller will scroll to top
+        setSelectedIndex(index);
         setActivePlace(place);
         navigate(`/map/${place.id}`);
     };
@@ -106,54 +64,17 @@ export default function MapScreen() {
         }, 300);
     };
 
-    const mainBounds = [
-        [applyLatScale(DEFAULT.south), DEFAULT.west],
-        [applyLatScale(DEFAULT.north), DEFAULT.east],
-    ];
-
-    const leftBounds = [
-        [mainBounds[0][0], -540],
-        [mainBounds[1][0], -180],
-    ];
-
-    const rightBounds = [
-        [mainBounds[0][0], 180],
-        [mainBounds[1][0], 540],
-    ];
-
     return (
         <div className="w-full h-full relative">
-            <MapContainer
-                center={[initialPlace.lat, initialPlace.lon]}
-                minZoom={3}
-                zoom={3}
-                maxZoom={3}
-                style={{height: "100%", width: "100%", zIndex: 0, position: "absolute"}}
-                worldCopyJump={true}
-                maxBoundsViscosity={1.0}
-                className="bg-black"
-                zoomControl={false}
-                attributionControl={false}
-                scrollWheelZoom={false}
-                doubleClickZoom={false}
-                touchZoom={false}
-                boxZoom={false}
-            >
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds}/>
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={leftBounds}/>
-                <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={rightBounds}/>
-
-                {places.map((place) => (
-                    <Marker
-                        key={place.id}
-                        position={[place.lat, place.lon]}
-                        icon={activePlace.id === place.id ? selectedIcon : defaultIcon}
-                        eventHandlers={{click: () => handleMarkerClick(place)}}
-                    />
-                ))}
-
-                <FlyToLocation flyTo={flyTo}/>
-            </MapContainer>
+            <MapBase center={[activePlace.lat, activePlace.lon]}>
+                <MapWorldOverlay />
+                <MapMarkers
+                    places={places}
+                    activeId={activePlace.id}
+                    onMarkerClick={handleMarkerClick}
+                />
+                <FlyToLocation flyTo={flyTo} />
+            </MapBase>
 
             <div className="absolute bottom-0 w-full">
                 <StepScroller
@@ -171,8 +92,6 @@ export default function MapScreen() {
                 closeModal={closeModal}
                 isClosing={isClosing}
             />
-
-
         </div>
     );
 }

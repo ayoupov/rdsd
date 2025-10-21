@@ -44,3 +44,7 @@ body {
 .h-screen {
   height: calc(var(--vh) * 100) !important;
 }
+
+.leaflet-container {
+  background-color: black !important;
+}
