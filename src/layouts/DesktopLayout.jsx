@@ -19,6 +19,8 @@ export default function DesktopLayout({onSelectPlace}) {
     const [activeTab, setActiveTab] = useState("unpp");
     const [isClosing, setIsClosing] = useState(false);
 
+    const [currentSlide, setCurrentSlide] = useState(0);
+
     useEffect(() => {
         const parts = location.pathname.split("/");
         if (parts[1] === "map" && parts[2]) {
@@ -61,6 +63,20 @@ export default function DesktopLayout({onSelectPlace}) {
         }, 300);
     };
 
+    const carouselTexts = [
+        "A remote detour around Unfinished Nuclear Power Plants and their settlements.",
+        "There are 27 Unfinished Nuclear Power Plants worldwide, some requiring dedicated settlements for workers with families — nearly half a million people bound to projects that never reached completion.",
+        "This project explores 13 communities inhabiting the periphery of the modern built environment after their dream of living in the center of the modern technology failed."
+    ];
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % carouselTexts.length);
+        }, 8000); // change slide every 8 seconds
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="flex h-screen w-screen bg-black text-white overflow-hidden">
             {/* Left: Map */}
@@ -78,25 +94,41 @@ export default function DesktopLayout({onSelectPlace}) {
 
             {/* Right: Info panel */}
             <div className="w-[35%] min-w-[420px] bg-black text-white flex flex-col border-l border-gray-800">
-                <div className="flex justify-between items-start p-6">
-                    <div>
-                        <div className="text-5xl font-bold leading-none tracking-tight">
-                            ROADSIDE<br/>PICNIC
-                        </div>
-                        <p className="mt-3 text-sm text-gray-300 w-64">
-                            A remote detour around Unfinished Nuclear Power Plants and their settlements
-                        </p>
+                <div className="flex items-start p-6 relative">
+                    {/* Menu buttons */}
+                    <div className="absolute top-0 left-0 right-0 flex justify-between w-full px-6 pt-[16px] mb-[24px]">
+                        <button className="hover:text-[#6A6A6A]">About</button>
+                        <button className="hover:text-[#6A6A6A]">Support the project</button>
+                        <button className="underline hover:text-[#6A6A6A]">INST</button>
                     </div>
 
-                    <div className="flex flex-col items-end space-y-1 text-sm">
-                        <button className="hover:text-gray-400">About</button>
-                        <button className="hover:text-gray-400">Support the project</button>
-                        <button className="hover:text-gray-400">INST</button>
+                    {/* Logo + description */}
+                    <div className="flex flex-col items-center w-full mt-[24px]">
+                        <img
+                            src={process.env.PUBLIC_URL + "/img/logo-white.svg"}
+                            alt="Logo"
+                            className="block"
+                            style={{
+                                width: `358px`,
+                                height: `173px`,
+                                objectFit: "contain",
+                                maxWidth: "none",
+                            }}
+                        />
+                        <div className="mt-3 h-[144px] overflow-hidden relative w-full text-center">
+                            {carouselTexts.map((text, index) => (
+                                <div
+                                    key={index}
+                                    className={`absolute top-0 left-0 w-full transition-opacity duration-500 text-[18px] text-[#6A6A6A] ${
+                                        index === currentSlide ? "opacity-100" : "opacity-0"
+                                    }`}
+                                >
+                                    {text}
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
-
-                {/* Divider */}
-                {/*<div className="border-t border-gray-700 mx-6 mb-2"/>*/}
 
                 {/* Scrollable list of places */}
                 <div className="flex-1 flex flex-col justify-end overflow-y-auto px-[16px] pb-6 mv-[20px] custom-scrollbar">
