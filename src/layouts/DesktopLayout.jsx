@@ -83,9 +83,9 @@ export default function DesktopLayout({onSelectPlace}) {
     };
 
     return (
-        <div className="flex h-screen w-screen bg-black text-white overflow-hidden">
+        <div className="flex h-screen w-screen bg-white text-white overflow-hidden">
             {/* Left: Map */}
-            <div className="flex-1 relative">
+            <div className="flex-1 relative bg-white rounded-[16px] overflow-hidden shadow-lg m-[4px]">
                 <MapBase center={[activePlace.lat, activePlace.lon]}>
                     <MapWorldOverlay/>
                     <MapMarkers
@@ -98,17 +98,17 @@ export default function DesktopLayout({onSelectPlace}) {
             </div>
 
             {/* Right: Info panel */}
-            <div className="w-[35%] min-w-[420px] bg-black text-white flex flex-col border-l border-gray-800">
-                <div className="flex items-start p-6 relative">
+            <div className="w-[35%] min-w-[420px] bg-black text-white flex flex-col shadow-lg rounded-[16px] mr-[4px] mt-[4px] mb-[4px]">
+                <div className="flex items-start relative">
                     {/* Menu buttons */}
-                    <div className="absolute top-0 left-0 right-0 flex justify-between w-full px-6 pt-[16px] mb-[24px]">
+                    <div className="absolute top-0 left-0 right-0 flex justify-between w-full px-6 mt-[16px] mb-[24px]">
                         <button className="hover:text-[#6A6A6A]">About</button>
                         <button className="hover:text-[#6A6A6A]">Support the project</button>
                         <button className="underline hover:text-[#6A6A6A]" onClick={handleInstClick}>INST</button>
                     </div>
 
                     {/* Logo + description */}
-                    <div className="flex flex-col items-center w-full mt-[24px]">
+                    <div className="flex flex-col items-center w-full mt-[54px]">
                         <img
                             src={process.env.PUBLIC_URL + "/img/logo-white.svg"}
                             alt="Logo"
