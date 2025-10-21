@@ -1,8 +1,8 @@
 // components/SupportModal.jsx
 import React from "react";
-import CloseButton from "./CloseButton";
+import CloseButton from "../CloseButton";
 
-export default function SupportModal({closeModal}) {
+export default function SupportModal({closeModal}, isDesktop = false) {
     return (
         <div className="fixed inset-0 z-50 flex flex-col bg-white">
 

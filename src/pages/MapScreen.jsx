@@ -8,7 +8,7 @@ import MapMarkers from "../components/map/MapMarkers";
 import FlyToLocation from "../components/map/FlyToLocation";
 
 import StepScroller from "../components/StepScroller";
-import PlaceModal from "../components/PlaceModal";
+import PlaceModal from "../components/modals/PlaceModal";
 
 export default function MapScreen() {
     const location = useLocation();

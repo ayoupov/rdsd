@@ -6,6 +6,10 @@ import MapMarkers from "../components/map/MapMarkers";
 import FlyToLocation from "../components/map/FlyToLocation";
 import {places} from "../places";
 
+import SlidingModal from "../components/modals/SlidingModal";
+import AboutModal from "../components/modals/AboutModal";
+import SupportModal from "../components/modals/SupportModal";
+import PlaceModal from "../components/modals/PlaceModal";
 
 export default function DesktopLayout({onSelectPlace}) {
     const location = useLocation();
@@ -20,6 +24,12 @@ export default function DesktopLayout({onSelectPlace}) {
     const [isClosing, setIsClosing] = useState(false);
 
     const [currentSlide, setCurrentSlide] = useState(0);
+
+    const [openModal, setOpenModal] = useState(null);
+
+    const openAbout = () => setOpenModal("about");
+    const openSupport = () => setOpenModal("support");
+    const closeModal = () => setOpenModal(null);
 
     useEffect(() => {
         const parts = location.pathname.split("/");
@@ -55,13 +65,13 @@ export default function DesktopLayout({onSelectPlace}) {
         navigate(`/map/${place.id}`);
     };
 
-    const closeModal = () => {
-        setIsClosing(true);
-        setTimeout(() => {
-            setSelectedPlaceForModal(null);
-            setIsClosing(false);
-        }, 300);
-    };
+    // const closeModal = () => {
+    //     setIsClosing(true);
+    //     setTimeout(() => {
+    //         setSelectedPlaceForModal(null);
+    //         setIsClosing(false);
+    //     }, 300);
+    // };
 
     const carouselTexts = [
         "A remote detour around Unfinished Nuclear Power Plants and their settlements.",
@@ -98,16 +108,16 @@ export default function DesktopLayout({onSelectPlace}) {
             </div>
 
             {/* Right: Info panel */}
-            <div className="w-[35%] min-w-[420px] bg-black text-white flex flex-col shadow-lg rounded-[16px] mr-[4px] mt-[4px] mb-[4px]">
+            <div className="w-[35%] min-w-[420px] bg-black flex flex-col shadow-lg rounded-[16px] mr-[4px] mt-[4px] mb-[4px] relative">
                 <div className="flex items-start relative">
                     {/* Menu buttons */}
                     <div className="absolute top-0 left-0 right-0 flex justify-between w-full px-6 mt-[16px] mb-[24px]">
-                        <button className="hover:text-[#6A6A6A]">About</button>
-                        <button className="hover:text-[#6A6A6A]">Support the project</button>
-                        <button className="underline hover:text-[#6A6A6A]" onClick={handleInstClick}>INST</button>
+                        <button className="hover:text-[#6A6A6A]" onClick={openAbout}>About</button>
+                        <button className="hover:text-[#6A6A6A]" onClick={openSupport}>Support the project</button>
+                        <button className="underline hover:text-[#6A6A6A]" onClick={handleInstClick}>Instagram</button>
                     </div>
 
-                    {/* Logo + description */}
+                    {/* Logo + carousel */}
                     <div className="flex flex-col items-center w-full mt-[54px]">
                         <img
                             src={process.env.PUBLIC_URL + "/img/logo-white.svg"}
@@ -117,7 +127,7 @@ export default function DesktopLayout({onSelectPlace}) {
                                 width: `358px`,
                                 height: `173px`,
                                 objectFit: "contain",
-                                maxWidth: "none",
+                                maxWidth: "358px",
                             }}
                         />
                         <div className="mt-3 h-[144px] overflow-hidden relative w-full text-center">
@@ -166,6 +176,14 @@ export default function DesktopLayout({onSelectPlace}) {
                         </button>
                     ))}
                 </div>
+                {/* Modals */}
+                <SlidingModal isOpen={openModal === "about"} closeModal={closeModal}>
+                    <AboutModal closeModal={closeModal} isDesktop={true}/>
+                </SlidingModal>
+
+                <SlidingModal isOpen={openModal === "support"} closeModal={closeModal}>
+                    <SupportModal closeModal={closeModal} isDesktop={true}/>
+                </SlidingModal>
             </div>
         </div>
     );

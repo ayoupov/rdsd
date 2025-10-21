@@ -1,23 +1,23 @@
-// components/AboutModal.jsx
+// components/modals/AboutModal.jsx
 import React from "react";
-import CloseButton from "./CloseButton";
+import CloseButton from "../CloseButton";
 
-export default function AboutModal({closeModal}) {
+export default function AboutModal({ closeModal, isDesktop = false }) {
     return (
-        <div className="fixed inset-0 z-50 flex flex-col bg-white">
-
+        <div className="flex flex-col flex-1">
             {/* Close button */}
-            <CloseButton onClick={closeModal} color="black" />
+            <CloseButton
+                onClick={closeModal}
+                color="black"
+                className="absolute top-4 right-4"
+            />
 
-            {/* Center-top small logo
-                // const finalWidth = 100;
-                // const finalHeight = 49;
-            */}
+            {/* Center-top small logo */}
             <div className="flex justify-center mt-4">
                 <img
                     src={process.env.PUBLIC_URL + "/img/logo-black.svg"}
                     alt="Logo"
-                    className="max-w-[100px] full-w object-contain"
+                    className="max-w-[100px] object-contain"
                 />
             </div>
 
@@ -37,11 +37,11 @@ export default function AboutModal({closeModal}) {
                     through exhibitions and publications, Roadside Picnic is evolving into a comprehensive atlas of
                     these sites.
                 </p>
-                <br/>
+                <br />
                 <p className="text-[#6A6A6A] text-[18px]">
-                    © All rights reserved 2025 LANDWORKS<br/>
-                    Research: Paul Cetnarski<br/>
-                    Web Design: Alexandra Fedorovskaya<br/>
+                    © All rights reserved 2025 LANDWORKS<br />
+                    Research: Paul Cetnarski<br />
+                    Web Design: Alexandra Fedorovskaya<br />
                     Web Development: Alexander Ayoupov
                 </p>
             </div>

@@ -14,8 +14,8 @@ import MapScreen from "../pages/MapScreen";
 import BurgerMenu from "../components/BurgerMenu";
 import LogoHeader from "../components/LogoHeader";
 import OverlayMenu from "../components/OverlayMenu";
-import AboutModal from "../components/AboutModal";
-import SupportModal from "../components/SupportModal";
+import AboutModal from "../components/modals/AboutModal";
+import SupportModal from "../components/modals/SupportModal";
 
 export default function MobileScrollLayout() {
     const containerRef = useRef(null);

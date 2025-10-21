@@ -1,7 +1,7 @@
 // PlaceModal.jsx
 import React from "react";
 
-export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, closeModal, isClosing }) {
+export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, closeModal, isClosing, isDesktop = false }) {
     if (!selectedPlace) return null;
     const showImages = false;
 
