@@ -45,8 +45,6 @@ export default function MapScreen() {
     const navigate = useNavigate();
     const [id, setId] = useState(places[0].id);
 
-    // const id = params.id || places[0].id;
-
     useEffect(() => {
         const parts = location.pathname.split("/");
         if (parts[1] === "map" && parts[2] && places.find((p) => p.id === parts[2])) {
@@ -132,7 +130,6 @@ export default function MapScreen() {
                 maxZoom={3}
                 style={{height: "100%", width: "100%", zIndex: 0, position: "absolute"}}
                 worldCopyJump={true}
-                // maxBounds={mainBounds}
                 maxBoundsViscosity={1.0}
                 className="bg-black"
                 zoomControl={false}
@@ -142,7 +139,6 @@ export default function MapScreen() {
                 touchZoom={false}
                 boxZoom={false}
             >
-                {/*<TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"/>*/}
                 <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={mainBounds}/>
                 <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={leftBounds}/>
                 <ImageOverlay url={process.env.PUBLIC_URL + "/img/world.png"} bounds={rightBounds}/>

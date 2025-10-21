@@ -27,7 +27,7 @@ export default function StepScroller({ items, selectedIndex = 0, onItemSelect, o
         setScrolling(true);
 
         if (onItemSelect) onItemSelect(items[newIndex]);
-        console.log({ top: newIndex * ITEM_HEIGHT});
+        // console.log({ top: newIndex * ITEM_HEIGHT});
 
         if (containerRef.current) {
             containerRef.current.scrollTo({ top: newIndex * ITEM_HEIGHT, behavior: "smooth" });
