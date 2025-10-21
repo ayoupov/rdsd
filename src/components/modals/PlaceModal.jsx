@@ -1,5 +1,7 @@
 // PlaceModal.jsx
 import React from "react";
+import BackArrowButtonLine from "../BackArrowButtonLine"
+
 
 export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, closeModal, isClosing, isDesktop = false }) {
     if (!selectedPlace) return null;
@@ -19,16 +21,7 @@ export default function PlaceModal({ selectedPlace, activeTab, setActiveTab, clo
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close button row */}
-                <div className="flex justify-start mb-2">
-                    <button
-                        onClick={closeModal}
-                        className="text-gray-700 hover:text-black text-xl"
-                        aria-label="Close"
-                    >
-                        ←
-                    </button>
-                </div>
-
+                <BackArrowButtonLine onClick={closeModal}/>
                 {/* Tabs Header */}
                 <div className="flex mb-4">
                     <button

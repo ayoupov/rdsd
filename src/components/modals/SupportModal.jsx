@@ -1,28 +1,31 @@
 // components/SupportModal.jsx
 import React from "react";
 import CloseButton from "../CloseButton";
+import BackArrowButtonLine from "../BackArrowButtonLine"
 
-export default function SupportModal({closeModal}, isDesktop = false) {
+export default function SupportModal({closeModal, isDesktop = false}) {
     return (
         <div className="fixed inset-0 z-50 flex flex-col bg-white">
 
             {/* Close button */}
-            <CloseButton onClick={closeModal} color="black" />
+            {!isDesktop ? <CloseButton
+                onClick={closeModal}
+                color="black"
+                className="absolute top-4 right-4"
+            /> : <BackArrowButtonLine onClick={closeModal} className="px-6 pt-[16px]"/>
+            }
 
-            {/* Center-top small logo
-                // const finalWidth = 100;
-                // const finalHeight = 49;
-            */}
-            <div className="flex justify-center mt-4">
+            {/* Center-top small logo */}
+            {!isDesktop && <div className="flex justify-center mt-4">
                 <img
                     src={process.env.PUBLIC_URL + "/img/logo-black.svg"}
                     alt="Logo"
-                    className="max-w-[100px] full-w object-contain"
+                    className="max-w-[100px] object-contain"
                 />
-            </div>
+            </div>}
 
             {/* Header */}
-            <h1 className="text-[32px] font-bold mt-6 px-6">
+            <h1 className={`text-[32px] font-bold ${isDesktop ? "" : "mt-6"} px-6`}>
                 Support the project
             </h1>
 

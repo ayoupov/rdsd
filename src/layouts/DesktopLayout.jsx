@@ -93,9 +93,9 @@ export default function DesktopLayout({onSelectPlace}) {
     };
 
     return (
-        <div className="flex h-screen w-screen bg-white text-white overflow-hidden">
+        <div className="flex h-screen w-screen bg-white overflow-hidden">
             {/* Left: Map */}
-            <div className="flex-1 relative bg-white rounded-[16px] overflow-hidden shadow-lg m-[4px]">
+            <div className="flex-1 relative bg-white rounded-[16px] overflow-hidden m-[4px]">
                 <MapBase center={[activePlace.lat, activePlace.lon]}>
                     <MapWorldOverlay/>
                     <MapMarkers
@@ -108,8 +108,8 @@ export default function DesktopLayout({onSelectPlace}) {
             </div>
 
             {/* Right: Info panel */}
-            <div className="w-[35%] min-w-[420px] bg-black flex flex-col shadow-lg rounded-[16px] mr-[4px] mt-[4px] mb-[4px] relative">
-                <div className="flex items-start relative">
+            <div className="w-[35%] min-w-[420px] bg-black flex flex-col rounded-[16px] mr-[4px] mt-[4px] mb-[4px] relative">
+                <div className="flex items-start relative text-white">
                     {/* Menu buttons */}
                     <div className="absolute top-0 left-0 right-0 flex justify-between w-full px-6 mt-[16px] mb-[24px]">
                         <button className="hover:text-[#6A6A6A]" onClick={openAbout}>About</button>
@@ -118,7 +118,7 @@ export default function DesktopLayout({onSelectPlace}) {
                     </div>
 
                     {/* Logo + carousel */}
-                    <div className="flex flex-col items-center w-full mt-[54px]">
+                    <div className="flex flex-col items-center w-full mt-[54px] text-white">
                         <img
                             src={process.env.PUBLIC_URL + "/img/logo-white.svg"}
                             alt="Logo"
