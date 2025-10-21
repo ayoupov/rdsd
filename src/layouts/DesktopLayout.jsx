@@ -15,7 +15,6 @@ export default function DesktopLayout() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const [id, setId] = useState(places[0].id);
     const [activePlace, setActivePlace] = useState(places[0]);
     const [flyTo, setFlyTo] = useState([places[0].lat, places[0].lon]);
     const [selectedPlaceForModal, setSelectedPlaceForModal] = useState(null);
@@ -37,18 +36,11 @@ export default function DesktopLayout() {
         if (parts[1] === "map" && parts[2]) {
             const found = places.find((p) => p.id === parts[2]);
             if (found) {
-                setId(found.id);
                 setActivePlace(found);
                 setFlyTo([found.lat, found.lon]);
             }
         }
     }, [location]);
-
-    const handleItemSelect = (place) => {
-        setActivePlace(place);
-        setFlyTo([place.lat, place.lon]);
-        navigate(`/map/${place.id}`);
-    };
 
     const handleItemClick = (place) => {
         setSelectedPlaceForModal(place);
@@ -59,7 +51,6 @@ export default function DesktopLayout() {
     };
 
     const handleMarkerClick = (place) => {
-        const index = places.findIndex((p) => p.id === place.id);
         setActivePlace(place);
         navigate(`/map/${place.id}`);
     };
@@ -83,7 +74,7 @@ export default function DesktopLayout() {
         }, 8000); // change slide every 8 seconds
 
         return () => clearInterval(interval);
-    }, []);
+    });
 
     const handleInstClick = () => {
         const webUrl = `https://www.instagram.com/lndwrks`;
