@@ -77,6 +77,11 @@ export default function DesktopLayout({onSelectPlace}) {
         return () => clearInterval(interval);
     }, []);
 
+    const handleInstClick = () => {
+        const webUrl = `https://www.instagram.com/lndwrks`;
+        window.open(webUrl, "_blank");
+    };
+
     return (
         <div className="flex h-screen w-screen bg-black text-white overflow-hidden">
             {/* Left: Map */}
@@ -99,7 +104,7 @@ export default function DesktopLayout({onSelectPlace}) {
                     <div className="absolute top-0 left-0 right-0 flex justify-between w-full px-6 pt-[16px] mb-[24px]">
                         <button className="hover:text-[#6A6A6A]">About</button>
                         <button className="hover:text-[#6A6A6A]">Support the project</button>
-                        <button className="underline hover:text-[#6A6A6A]">INST</button>
+                        <button className="underline hover:text-[#6A6A6A]" onClick={handleInstClick}>INST</button>
                     </div>
 
                     {/* Logo + description */}
