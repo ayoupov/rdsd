@@ -160,7 +160,7 @@ export default function DesktopLayout({onSelectPlace}) {
                             <span className="ml-2" style={{display: "flex", alignItems: "center"}}>
                             <svg width="9" height="14" viewBox="0 0 9 14" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
-                              <path d="M0 0 L9 7 L0 14" stroke="white" strokeWidth="2"/>
+                              <path d="M0 0 L9 7 L0 14" stroke={`${activePlace?.id === p.id ? "#CDCDCD" : "#6A6A6A"}`} strokeWidth="2"/>
                             </svg>
                           </span>
                         </button>
