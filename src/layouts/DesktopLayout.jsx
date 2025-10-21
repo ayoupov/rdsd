@@ -11,7 +11,7 @@ import AboutModal from "../components/modals/AboutModal";
 import SupportModal from "../components/modals/SupportModal";
 import PlaceModal from "../components/modals/PlaceModal";
 
-export default function DesktopLayout({onSelectPlace}) {
+export default function DesktopLayout() {
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -19,7 +19,6 @@ export default function DesktopLayout({onSelectPlace}) {
     const [activePlace, setActivePlace] = useState(places[0]);
     const [flyTo, setFlyTo] = useState([places[0].lat, places[0].lon]);
     const [selectedPlaceForModal, setSelectedPlaceForModal] = useState(null);
-    const [selectedIndex, setSelectedIndex] = useState(0);
     const [activeTab, setActiveTab] = useState("unpp");
     const [isClosing, setIsClosing] = useState(false);
 
@@ -29,7 +28,9 @@ export default function DesktopLayout({onSelectPlace}) {
 
     const openAbout = () => setOpenModal("about");
     const openSupport = () => setOpenModal("support");
-    const closeModal = () => setOpenModal(null);
+    const openPlace = (place) => {
+        setOpenModal("place");
+    }
 
     useEffect(() => {
         const parts = location.pathname.split("/");
@@ -39,7 +40,6 @@ export default function DesktopLayout({onSelectPlace}) {
                 setId(found.id);
                 setActivePlace(found);
                 setFlyTo([found.lat, found.lon]);
-                setSelectedIndex(places.findIndex((p) => p.id === found.id));
             }
         }
     }, [location]);
@@ -47,7 +47,6 @@ export default function DesktopLayout({onSelectPlace}) {
     const handleItemSelect = (place) => {
         setActivePlace(place);
         setFlyTo([place.lat, place.lon]);
-        setSelectedIndex(places.findIndex((p) => p.id === place.id));
         navigate(`/map/${place.id}`);
     };
 
@@ -56,22 +55,21 @@ export default function DesktopLayout({onSelectPlace}) {
         setActiveTab("unpp");
         setIsClosing(false);
         navigate(`/map/${place.id}`);
+        openPlace(place);
     };
 
     const handleMarkerClick = (place) => {
         const index = places.findIndex((p) => p.id === place.id);
-        setSelectedIndex(index);
         setActivePlace(place);
         navigate(`/map/${place.id}`);
     };
 
-    // const closeModal = () => {
-    //     setIsClosing(true);
-    //     setTimeout(() => {
-    //         setSelectedPlaceForModal(null);
-    //         setIsClosing(false);
-    //     }, 300);
-    // };
+    const closeModal = () => {
+        setOpenModal(null);
+        if (openModal === "place") {
+            setSelectedPlaceForModal(null);
+        }
+    };
 
     const carouselTexts = [
         "A remote detour around Unfinished Nuclear Power Plants and their settlements.",
@@ -108,7 +106,8 @@ export default function DesktopLayout({onSelectPlace}) {
             </div>
 
             {/* Right: Info panel */}
-            <div className="w-[35%] min-w-[420px] bg-black flex flex-col rounded-[16px] mr-[4px] mt-[4px] mb-[4px] relative">
+            <div
+                className="w-[35%] min-w-[420px] bg-black flex flex-col rounded-[16px] mr-[4px] mt-[4px] mb-[4px] relative">
                 <div className="flex items-start relative text-white">
                     {/* Menu buttons */}
                     <div className="absolute top-0 left-0 right-0 flex justify-between w-full px-6 mt-[16px] mb-[24px]">
@@ -146,11 +145,12 @@ export default function DesktopLayout({onSelectPlace}) {
                 </div>
 
                 {/* Scrollable list of places */}
-                <div className="flex-1 flex flex-col justify-end overflow-y-auto px-[16px] pb-6 mv-[20px] custom-scrollbar">
+                <div
+                    className="flex-1 flex flex-col justify-end overflow-y-auto px-[16px] pb-6 mv-[20px] custom-scrollbar">
                     {places.map((p) => (
                         <button
                             key={p.id}
-                            onClick={() => onSelectPlace(p)}
+                            onClick={() => handleItemClick(p)}
                             className={`
                         w-full px-[16px] my-[4px] text-left rounded-lg flex justify-between items-center hover:text-[#CDCDCD]
                         ${activePlace?.id === p.id ? "text-[#CDCDCD]" : "text-[#6A6A6A]"}
@@ -170,19 +170,31 @@ export default function DesktopLayout({onSelectPlace}) {
                             <span className="ml-2" style={{display: "flex", alignItems: "center"}}>
                             <svg width="9" height="14" viewBox="0 0 9 14" fill="none"
                                  xmlns="http://www.w3.org/2000/svg">
-                              <path d="M0 0 L9 7 L0 14" stroke={`${activePlace?.id === p.id ? "#CDCDCD" : "#6A6A6A"}`} strokeWidth="2"/>
+                              <path d="M0 0 L9 7 L0 14" stroke={`${activePlace?.id === p.id ? "#CDCDCD" : "#6A6A6A"}`}
+                                    strokeWidth="2"/>
                             </svg>
                           </span>
                         </button>
                     ))}
                 </div>
                 {/* Modals */}
-                <SlidingModal isOpen={openModal === "about"} closeModal={closeModal}>
+                <SlidingModal isOpen={openModal === "about"}>
                     <AboutModal closeModal={closeModal} isDesktop={true}/>
                 </SlidingModal>
 
-                <SlidingModal isOpen={openModal === "support"} closeModal={closeModal}>
+                <SlidingModal isOpen={openModal === "support"}>
                     <SupportModal closeModal={closeModal} isDesktop={true}/>
+                </SlidingModal>
+
+                <SlidingModal isOpen={openModal === "place"}>
+                    <PlaceModal
+                        selectedPlace={selectedPlaceForModal}
+                        activeTab={activeTab}
+                        setActiveTab={setActiveTab}
+                        closeModal={closeModal}
+                        isClosing={isClosing}
+                        isDesktop={true}
+                    />
                 </SlidingModal>
             </div>
         </div>
