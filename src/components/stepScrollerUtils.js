@@ -1,6 +1,5 @@
 // components/StepScroller/stepScrollerUtils.js
-
-export const ITEM_HEIGHT = 52;
+export const ITEM_HEIGHT = 52; // 46 + 6 margin as you used
 export const ANIM_MS = 200;
 
 export const normalizeIndex = (idx, length) =>
